@@ -19,17 +19,20 @@ public class Song {
 	private String songArtistFullName;
 	private String songAlbum;
 	private long songAmountFavourites;
+	private String songReleaseDate;
 	
 	public static final String KEY_SONG_NAME = "songName";
 	public static final String KEY_SONG_ARTIST_FULL_NAME = "songArtistFullName";
-	public static final String KEY_SONG_ALBUM = "songAlbum";	
+	public static final String KEY_SONG_ALBUM = "songAlbum";
+	public static final String KEY_SONG_RELEASE_DATE = "songReleaseDate";
 
 
-	public Song(String songName, String songArtistFullName, String songAlbum) {
+	public Song(String songName, String songArtistFullName, String songAlbum, String songReleaseDate) {
 		this.songName = songName;
 		this.songArtistFullName = songArtistFullName;
 		this.songAlbum = songAlbum;
 		this.songAmountFavourites = 0;
+		this.songReleaseDate = songReleaseDate;
 	}
 
 	public String getSongName() {
@@ -63,6 +66,10 @@ public class Song {
 	public void setSongAmountFavourites(long songAmountFavourites) {
 		this.songAmountFavourites = songAmountFavourites;
 	}
+
+	public String getSongReleaseDate() { return songReleaseDate; }
+
+	public void getSongReleaseDate(String songReleaseDate) { this.songReleaseDate = songReleaseDate; }
 
 	// ObjectId needs to be converted to string
 	public String getId() {
