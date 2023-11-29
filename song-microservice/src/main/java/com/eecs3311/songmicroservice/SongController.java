@@ -19,6 +19,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Controller class for handling HTTP requests related to songs.
+ */
 @RestController
 @RequestMapping
 public class SongController {
@@ -28,17 +31,21 @@ public class SongController {
 
 	private OkHttpClient client = new OkHttpClient();
 
-	
+	/**
+	 * Constructor for SongController.
+	 *
+	 * @param songDal The data access layer for song-related operations.
+	 */
 	public SongController(SongDal songDal) {
 		this.songDal = songDal;
 	}
 
 	/**
-	 * This method is partially implemented for you to follow as an example of
-	 * how to complete the implementations of methods in the controller classes.
-	 * @param songId
-	 * @param request
-	 * @return
+	 * Retrieves a song by its ID.
+	 *
+	 * @param songId  The ID of the song.
+	 * @param request The HTTP servlet request.
+	 * @return ResponseEntity containing information about the song.
 	 */
 	@RequestMapping(value = "/getSongById/{songId}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getSongById(@PathVariable("songId") String songId,
@@ -53,7 +60,13 @@ public class SongController {
 		return Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 	}
 
-	
+	/**
+	 * Retrieves the title of a song by its ID.
+	 *
+	 * @param songId  The ID of the song.
+	 * @param request The HTTP servlet request.
+	 * @return ResponseEntity containing the title of the song.
+	 */
 	@RequestMapping(value = "/getSongTitleById/{songId}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getSongTitleById(@PathVariable("songId") String songId,
 			HttpServletRequest request) {
@@ -67,7 +80,13 @@ public class SongController {
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
-
+	/**
+	 * Retrieves the release date of a song by its ID.
+	 *
+	 * @param songId  The ID of the song.
+	 * @param request The HTTP servlet request.
+	 * @return ResponseEntity containing the release date of the song.
+	 */
 	@RequestMapping(value = "/getReleaseDateById/{songId}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getReleaseDateById(@PathVariable("songId") String songId,
 																HttpServletRequest request) {
@@ -81,7 +100,13 @@ public class SongController {
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
-	
+	/**
+	 * Deletes a song by its ID.
+	 *
+	 * @param songId  The ID of the song.
+	 * @param request The HTTP servlet request.
+	 * @return ResponseEntity containing information about the deletion status.
+	 */
 	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.DELETE)
 	public ResponseEntity<Map<String, Object>> deleteSongById(@PathVariable("songId") String songId,
 			HttpServletRequest request) {
@@ -112,7 +137,13 @@ public class SongController {
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
-	
+	/**
+	 * Adds a new song.
+	 *
+	 * @param params  The parameters for the new song.
+	 * @param request The HTTP servlet request.
+	 * @return ResponseEntity containing information about the addition status.
+	 */
 	@RequestMapping(value = "/addSong", method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addSong(@RequestBody Map<String, String> params,
 			HttpServletRequest request) {
@@ -149,7 +180,13 @@ public class SongController {
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
-	
+	/**
+	 * Updates the favorite count of a song.
+	 *
+	 * @param params  The parameters for updating the favorite count.
+	 * @param request The HTTP servlet request.
+	 * @return ResponseEntity containing information about the update status.
+	 */
 	@RequestMapping(value = "/updateSongFavouritesCount", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> updateFavouritesCount(@RequestBody Map<String, String> params, HttpServletRequest request) {
 
