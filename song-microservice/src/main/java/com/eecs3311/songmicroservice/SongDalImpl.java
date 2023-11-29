@@ -53,8 +53,13 @@ public class SongDalImpl implements SongDal {
 
 	@Override
 	public DbQueryStatus deleteSongById(String songId) {
-		// TODO Auto-generated method stub
-		return null;
+		if (db.findById(songId, Song.class) != null) {
+			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			db.remove(db.findById(songId, Song.class));
+			return status;
+		}
+		DbQueryStatus status = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+		return status;
 	}
 
 	@Override
