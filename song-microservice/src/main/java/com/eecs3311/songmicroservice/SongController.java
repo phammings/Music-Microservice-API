@@ -1,5 +1,7 @@
 package com.eecs3311.songmicroservice;
 
+import okhttp3.*;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,11 +49,8 @@ public class SongController {
 
 		DbQueryStatus dbQueryStatus = songDal.findSongById(songId);
 
-		// TODO: uncomment these two lines when you have completed the implementation of findSongById in SongDal
-		// response.put("message", dbQueryStatus.getMessage());
-		// return Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
-		
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: remove when the above 2 lines are uncommented
+		response.put("message", dbQueryStatus.getMessage());
+		return Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 	}
 
 	
@@ -66,9 +60,11 @@ public class SongController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in getSongById
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		DbQueryStatus status = songDal.getSongTitleById(songId);
+
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
 	
@@ -78,9 +74,28 @@ public class SongController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("DELETE %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in getSongById
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		DbQueryStatus status = songDal.deleteSongById(songId);
+
+		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
+			String url = "http://localhost:3002/deleteAllSongsFromDb/";
+			url += songId;
+			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
+
+			try (Response responseForm = this.client.newCall(requestForm).execute()) {
+				JSONObject JSONrequest = new JSONObject(responseForm.body().string());
+				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
+				if (!isRequestSuccessful) {
+					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				}
+			} catch (IOException e) {
+				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				e.printStackTrace();
+			}
+		}
+
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
 	
@@ -90,9 +105,33 @@ public class SongController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in getSongById
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		String artistName = params.get("songName");
+		String songName = params.get("songArtistFullName");
+		String album = params.get("songAlbum");
+
+		Song song = new Song(artistName, songName, album);
+		DbQueryStatus status = songDal.addSong(song);
+
+		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
+			String url = "http://localhost:3002/deleteAllSongsFromDb/";
+			url += song.getId();
+			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
+
+			try (Response responseForm = this.client.newCall(requestForm).execute()) {
+				JSONObject JSONrequest = new JSONObject(responseForm.body().string());
+				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
+				if (!isRequestSuccessful) {
+					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				}
+			} catch (IOException e) {
+				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				e.printStackTrace();
+			}
+		}
+
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
 	
@@ -101,8 +140,14 @@ public class SongController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("data", String.format("PUT %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in getSongById
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		String songId = params.get("songId");
+		String shouldDecrement = params.get("shouldDecrement");
+		boolean shouldDecrementBoolean = (shouldDecrement.equals("true"));
+
+		DbQueryStatus status = songDal.updateSongFavouritesCount(songId, shouldDecrementBoolean);
+
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 }
