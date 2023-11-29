@@ -67,6 +67,20 @@ public class SongController {
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
+
+	@RequestMapping(value = "/getReleaseDateById/{songId}", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getReleaseDateById(@PathVariable("songId") String songId,
+																HttpServletRequest request) {
+
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("path", String.format("GET %s", Utils.getUrl(request)));
+
+		DbQueryStatus status = songDal.getReleaseDateById(songId);
+
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+	}
+
 	
 	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.DELETE)
 	public ResponseEntity<Map<String, Object>> deleteSongById(@PathVariable("songId") String songId,
@@ -109,8 +123,9 @@ public class SongController {
 		String artistName = params.get("songName");
 		String songName = params.get("songArtistFullName");
 		String album = params.get("songAlbum");
+		String releaseDate = params.get("songReleaseDate");
 
-		Song song = new Song(artistName, songName, album);
+		Song song = new Song(artistName, songName, album, releaseDate);
 		DbQueryStatus status = songDal.addSong(song);
 
 		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
