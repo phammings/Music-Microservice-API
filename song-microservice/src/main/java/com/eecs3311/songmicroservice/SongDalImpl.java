@@ -21,7 +21,7 @@ public class SongDalImpl implements SongDal {
 	public DbQueryStatus addSong(Song songToAdd) {
 		if (songToAdd.getSongAlbum() != null && songToAdd.getSongName() != null && songToAdd.getSongArtistFullName() != null ) {
 			db.insert(songToAdd);
-			DbQueryStatus status = new DbQueryStatus("Added song", DbQueryExecResult.QUERY_OK);
+			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 			status.setData(songToAdd);
 			return status;
 		}
@@ -32,7 +32,7 @@ public class SongDalImpl implements SongDal {
 	@Override
 	public DbQueryStatus findSongById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
-			DbQueryStatus status = new DbQueryStatus("Song found", DbQueryExecResult.QUERY_OK);
+			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 			status.setData(db.findById(songId, Song.class));
 			return status;
 		}
