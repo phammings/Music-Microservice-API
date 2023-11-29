@@ -79,7 +79,6 @@ public class SongDalImpl implements SongDal {
 				song.setSongAmountFavourites(song.getSongAmountFavourites() + 1);
 			}
 			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-			song = db.save(song);
 			return status;
 		}
 		else {
