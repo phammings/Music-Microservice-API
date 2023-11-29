@@ -19,8 +19,14 @@ public class SongDalImpl implements SongDal {
 
 	@Override
 	public DbQueryStatus addSong(Song songToAdd) {
-		// TODO Auto-generated method stub
-		return null;
+		if (songToAdd.getSongAlbum() != null && songToAdd.getSongName() != null && songToAdd.getSongArtistFullName() != null ) {
+			db.insert(songToAdd);
+			DbQueryStatus status = new DbQueryStatus("Added song", DbQueryExecResult.QUERY_OK);
+			status.setData(songToAdd);
+			return status;
+		}
+		DbQueryStatus status = new DbQueryStatus("Song invalid", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		return status;
 	}
 
 	@Override
