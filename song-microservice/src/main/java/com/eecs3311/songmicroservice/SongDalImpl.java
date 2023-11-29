@@ -4,16 +4,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Implementation of the Song Data Access Layer (SongDal) interface using MongoDB.
+ * Provides methods for interacting with the MongoDB database for song-related operations.
+ */
 @Repository
 public class SongDalImpl implements SongDal {
 
 	private final MongoTemplate db;
 
+	/**
+	 * Constructor for SongDalImpl.
+	 *
+	 * @param mongoTemplate The MongoDB template for interacting with the database.
+	 */
 	@Autowired
 	public SongDalImpl(MongoTemplate mongoTemplate) {
 		this.db = mongoTemplate;
 	}
 
+	/**
+	 * Adds a new song to the database.
+	 *
+	 * @param songToAdd The song to be added.
+	 * @return DbQueryStatus indicating the result of the operation.
+	 */
 	@Override
 	public DbQueryStatus addSong(Song songToAdd) {
 		if (songToAdd.getSongAlbum() != null && songToAdd.getSongName() != null && songToAdd.getSongArtistFullName() != null ) {
@@ -26,6 +41,12 @@ public class SongDalImpl implements SongDal {
 		return status;
 	}
 
+	/**
+	 * Retrieves a song by its ID from the database.
+	 *
+	 * @param songId The ID of the song to retrieve.
+	 * @return DbQueryStatus indicating the result of the operation.
+	 */
 	@Override
 	public DbQueryStatus findSongById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
@@ -37,6 +58,12 @@ public class SongDalImpl implements SongDal {
 		return status;
 	}
 
+	/**
+	 * Retrieves the title of a song by its ID from the database.
+	 *
+	 * @param songId The ID of the song to retrieve the title for.
+	 * @return DbQueryStatus indicating the result of the operation.
+	 */
 	@Override
 	public DbQueryStatus getSongTitleById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
@@ -48,6 +75,12 @@ public class SongDalImpl implements SongDal {
 		return status;
 	}
 
+	/**
+	 * Retrieves the release date of a song by its ID from the database.
+	 *
+	 * @param songId The ID of the song to retrieve the release date for.
+	 * @return DbQueryStatus indicating the result of the operation.
+	 */
 	@Override
 	public DbQueryStatus getReleaseDateById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
@@ -59,6 +92,12 @@ public class SongDalImpl implements SongDal {
 		return status;
 	}
 
+	/**
+	 * Deletes a song by its ID from the database.
+	 *
+	 * @param songId The ID of the song to delete.
+	 * @return DbQueryStatus indicating the result of the operation.
+	 */
 	@Override
 	public DbQueryStatus deleteSongById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
@@ -70,6 +109,13 @@ public class SongDalImpl implements SongDal {
 		return status;
 	}
 
+	/**
+	 * Updates the favorite count of a song by its ID in the database.
+	 *
+	 * @param songId          The ID of the song to update.
+	 * @param shouldDecrement A boolean indicating whether to decrement the favorite count.
+	 * @return DbQueryStatus indicating the result of the operation.
+	 */
 	@Override
 	public DbQueryStatus updateSongFavouritesCount(String songId, boolean shouldDecrement) {
 		if (db.findById(songId, Song.class) != null) {
