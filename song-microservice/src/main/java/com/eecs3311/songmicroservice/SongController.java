@@ -105,9 +105,33 @@ public class SongController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in getSongById
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		String artistName = params.get("songName");
+		String songName = params.get("songArtistFullName");
+		String album = params.get("songAlbum");
+
+		Song song = new Song(artistName, songName, album);
+		DbQueryStatus status = songDal.addSong(song);
+
+		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
+			String url = "http://localhost:3002/deleteAllSongsFromDb/";
+			url += song.getId();
+			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
+
+			try (Response responseForm = this.client.newCall(requestForm).execute()) {
+				JSONObject JSONrequest = new JSONObject(responseForm.body().string());
+				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
+				if (!isRequestSuccessful) {
+					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				}
+			} catch (IOException e) {
+				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				e.printStackTrace();
+			}
+		}
+
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
 	
