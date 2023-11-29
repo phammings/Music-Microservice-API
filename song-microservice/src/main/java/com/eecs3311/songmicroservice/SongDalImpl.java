@@ -64,7 +64,27 @@ public class SongDalImpl implements SongDal {
 
 	@Override
 	public DbQueryStatus updateSongFavouritesCount(String songId, boolean shouldDecrement) {
-		// TODO Auto-generated method stub
-		return null;
+		if (db.findById(songId, Song.class) != null) {
+			Song song = db.findById(songId, Song.class);
+
+			if (shouldDecrement == true && song.getSongAmountFavourites() == 0) {
+				DbQueryStatus status = new DbQueryStatus("Song like count must be above 0", DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return status;
+			}
+
+			if (shouldDecrement) {
+				song.setSongAmountFavourites(song.getSongAmountFavourites()-1);
+			}
+			else {
+				song.setSongAmountFavourites(song.getSongAmountFavourites() + 1);
+			}
+			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			song = db.save(song);
+			return status;
+		}
+		else {
+			DbQueryStatus status = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+			return status;
+		}
 	}
 }
