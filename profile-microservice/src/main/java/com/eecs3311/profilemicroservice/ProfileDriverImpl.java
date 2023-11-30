@@ -50,7 +50,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 		if(userName == null || fullName == null || password == null) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		try{
 			(Session new_session = driver.session()){
-				Map<String, Object,> new_HashMap = new HashMap<>();
+				Map<String, Object> new_HashMap = new HashMap<>();
 				new_HashMap.put("userName", userName);
 				new_HashMap.put("fullName", fullName);
 				new_HashMap.put("password", password);
@@ -91,7 +91,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 					Record new_Record = new_Statementresult.next();
 					alreadyFollows = new_Record.get("bool").asBoolean();
 					if (alreadyFollows == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
-					new_transaction.run("MATCH (a:profile),(b:profile) \n WHERE a.userName = $userName AND b.userName = $frndUserName \nCREATE (a)-[r:follows]->(b)", new_HashMap);
+					new_transaction.run("MATCH (p1:profile),(p2:profile) \n WHERE p1.userName = $userName AND p2.userName = $frndUserName \nCREATE (p1)-[r:follows]->(p2)", new_HashMap);
 					new_transaction.success();
 				}
 			}
@@ -144,7 +144,40 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
-			
-		return null;
+		String query;
+		StatementResult user_StatementResult;
+		StatementResult song_StatementResult;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("GET", DbQueryExecResult.QUERY_OK);
+		if (userName == null) new DbQueryStatus("GET", DbQueryExecResult.QUERY_ERROR_GENERIC);
+
+		try (Session new_session = driver.session()) {
+			Map<String, Object> new_HashMap = new HashMap<>();
+			new_HashMap.put("userName", userName);
+
+			try (Transaction new_transaction = new_session.beginTransaction()) {
+				// list of frnduser the user follows
+				// searches up every song the user has liked
+				query = "MATCH (p1:profile {userName: $userName})-[:follows]->(p2:profile) RETURN collect(p2.userName) as userName";
+				user_StatementResult = new_transaction.run(query, new_HashMap);
+				Map<String, Object> song_HashMap = new HashMap<>();
+				query = "MATCH (c:playlist {playlistName: $userName + '-favourites'})-[:includes]->(s:song) RETURN collect(s.songName) as songs";
+				if (user_StatementResult.hasNext() == false) return new DbQueryStatus("GET", DbQueryExecResult.QUERY_ERROR_GENERIC);
+				List<Object> user_followers = user_StatementResult.next().get("userName").asList();
+				for (Object f : user_followers) {
+					new_HashMap.put("userName", (String) f);
+					song_StatementResult = new_transaction.run(query, new_HashMap);
+					song_HashMap.put((String) f, (song_StatementResult.hasNext() == false) ? new ArrayList<String>() : song_StatementResult.next().get("songs").asList());
+				}
+				dbQueryStatus.setData(song_HashMap);
+				new_transaction.success();
+			}
+			new_session.close();
+			return dbQueryStatus;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new DbQueryStatus(e.getMessage(), DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
+		//return null;
 	}
 }
