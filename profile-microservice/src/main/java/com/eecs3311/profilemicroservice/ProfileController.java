@@ -114,7 +114,26 @@ public class ProfileController {
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		// Done, need to test
+		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params, request);
+		RequestBody new_RequestBody = new FormBody.builder().build();
+		String song_url = "" + params;
+		Request new_Request = new Request.Builder().url(song_url).put(new_RequestBody).build();
+
+		try{
+			if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)){
+				Response new_response = client.newCall(new_Request).execute();
+				JSONObject new_JSONOBJECT = new JSONObject(new_Request.body().string());
+				if(new_RequestBody.get("status").toString().equals("OK")) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				else if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND)) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_OK);
+			}
+		} catch(Exception e){
+			new_RequestBody.setdbQueryExecResult(DbQueryExeceResult.QUERY_ERROR_GENERIC);
+			e.printStackTrace();
+		}
+		response.put("msg", new_dbQueryStatus.getMessage());
+		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	@RequestMapping(value = "/unlikeSong", method = RequestMethod.PUT)
