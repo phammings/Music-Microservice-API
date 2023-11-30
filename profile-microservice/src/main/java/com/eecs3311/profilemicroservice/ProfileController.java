@@ -117,7 +117,7 @@ public class ProfileController {
 		// Done need to test
 		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params, request);
 		RequestBody new_RequestBody = new FormBody.builder().build();
-		String song_url = "" + params;
+		String song_url = "http://localhost:PORT/routeNameHere/ --data" + params;
 		Request new_Request = new Request.Builder().url(song_url).put(new_RequestBody).build();
 
 		try{
@@ -145,7 +145,7 @@ public class ProfileController {
 
 		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params, request);
 		ResponseBody new_ResponseBody = new FormBody.Builder().build();
-		String song_url = "" + params;
+		String song_url = "http://localhost:PORT/routeNameHere/ --data" + params;
 		Request new_Request = new Request.Builder().url(song_url).put(new_ResponseBody).build();
 
 		try{
