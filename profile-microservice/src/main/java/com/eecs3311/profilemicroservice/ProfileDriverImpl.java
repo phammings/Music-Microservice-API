@@ -70,8 +70,38 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
-		
-		return null;
+		if(userName == null || frndUserName == null) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		if(userName.equals(frndUserName)) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		try{
+			boolean alreadyFollows = false;
+			Map<String, Object> new_HashMap = new HashMap<>();
+			new_HashMap.put("userName", userName);
+			new_HashMap.put("frndUserName", frndUserName);
+
+			try (Transaction new_transaction = new_session.beginTransaction()) {
+				StatementResult user_exists = new_transaction.run("MATCH (n:profile {userName: $userName}) RETURN n.userName as u", new_HashMap);
+				StatementResult frnd_exists = new_transaction.run("MATCH (n:profile {userName: $frndUserName}) RETURN n.userName as f", new_HashMap);
+
+				// if no user exists
+				if (!user_exists.hasNext() || !frnd_exists.hasNext()) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+
+				// if the user already follows the friend
+				StatementResult new_Statementresult = new_transaction.run("RETURN EXISTS( (:profile {userName: $userName})-[:follows]->(:profile {userName: $frndUserName}) ) as bool", new_HashMap);
+				if (new_Statementresult.hasNext()) {
+					Record new_Record = new_Statementresult.next();
+					alreadyFollows = new_Record.get("bool").asBoolean();
+					if (alreadyFollows) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+					new_transaction.run("MATCH (a:profile),(b:profile) \n WHERE a.userName = $userName AND b.userName = $frndUserName \nCREATE (a)-[r:follows]->(b)", new_HashMap);
+					new_transaction.success();
+				}
+			}
+			new_session.close();
+			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_OK);
+
+		}catch (Exception e){
+			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
+		//return null;
 	}
 
 	@Override
