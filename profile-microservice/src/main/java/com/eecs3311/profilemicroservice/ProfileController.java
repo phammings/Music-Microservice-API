@@ -68,7 +68,7 @@ public class ProfileController {
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
 
-		//
+		// Done, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.followFriend(params, request);
 		response.put("msg", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
@@ -85,7 +85,11 @@ public class ProfileController {
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		// Done, need to test
+		DbQueryStatus new_dbQueryStatus = profileDriver.getAllSongFriendsLike(userName);
+		response.put("msg", new_dbQueryStatus.getMessage());
+		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 
