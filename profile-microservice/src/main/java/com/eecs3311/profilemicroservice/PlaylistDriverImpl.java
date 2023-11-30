@@ -33,13 +33,46 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 
 	@Override
 	public DbQueryStatus likeSong(String userName, String songId) {
+		StatementResult new_StatementResult;
+		String query;
+		if (userName == null || songId == null) return new DbQueryStatus("PUT", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		try (Session new_session = driver.session()) {
+			Map<String, Object> new_HashMap = new HashMap<>();
+			new_HashMap.put("playlistName", userName + "-favourites");
+			new_HashMap.put("songId", songId);
 
-		return null;
+			try (Transaction new_transaction = new_session.beginTransaction()) {
+				// if user playlist does not exist
+				query = "MATCH (p:playlist {plName: $plName}) RETURN p";
+				new_StatementResult = new_transaction.run(query, new_HashMap);
+				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("PUT", DbQueryExecResult.QUERY_ERROR_GENERIC);
+
+				// if song node does not exists
+				query = "MATCH (s:song {songId: $songId}) RETURN s";
+				new_StatementResult = new_transaction.run(query, new_HashMap);
+				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("PUT", DbQueryExecResult.QUERY_ERROR_GENERIC);
+
+				// if relationship between the nodes does not exists
+				query = "MATCH r=(p:playlist {plName: $plName})-[:includes]->(s:song {songId: $songId}) RETURN r";
+				new_StatementResult = new_transaction.run(query, new_HashMap);
+				if (new_StatementResult.hasNext() == true) return new DbQueryStatus("PUT", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				query = "MATCH (p:playlist {plName: $plName}) \n  MATCH (s:song {songId: $songId}) \n CREATE (p)-[:includes]->(s)";
+				new_transaction.run(query, new_HashMap);
+				new_transaction.success();
+			}
+			new_session.close();
+			return new DbQueryStatus("PUT", DbQueryExecResult.QUERY_OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new DbQueryStatus("PUT", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
+		//return null;
 	}
 
 	@Override
 	public DbQueryStatus unlikeSong(String userName, String songId) {
 		
-		return null;
+		//return null;
 	}
 }
