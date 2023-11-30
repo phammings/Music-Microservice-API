@@ -47,8 +47,25 @@ public class ProfileDriverImpl implements ProfileDriver {
 	
 	@Override
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
-		
-		return null;
+		if(userName == null || fullName == null || password == null) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		try{
+			(Session new_session = driver.session()){
+				Map<String, Object,> new_HashMap = new HashMap<>();
+				new_HashMap.put("userName", userName);
+				new_HashMap.put("fullName", fullName);
+				new_HashMap.put("password", password);
+				new_HashMap.put("playlistName" + userName + "-favourites");
+				new_session.writeTransaction((Transaction new_transaction) -> new_transaction.run){
+					statementTemplate:"Create (m:profile {userName: $userName, fullName: $fullName, password: $password})-[r:created]->(n:playlist {playlistName: playlistName})", new_HashMap));
+				new_session.close();
+				return new DbQueryStatus("POST", DbQueryExecResult.QUERY_OK);
+				}
+			}
+		} catch(Exception e){
+			System.out.println(e);
+			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
+
 	}
 
 	@Override
