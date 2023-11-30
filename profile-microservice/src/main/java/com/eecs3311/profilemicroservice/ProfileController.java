@@ -143,19 +143,20 @@ public class ProfileController {
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
 
+
 		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		RequestBody new_ResponseBody = new FormBody.Builder().build();
+		RequestBody new_RequestBody = new FormBody.Builder().build();
 		String song_url = "http://localhost:3001" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
-		Request new_Request = new Request.Builder().url(song_url).put(new_ResponseBody).build();
+		Request new_Request = new Request.Builder().url(song_url).put(new_RequestBody).build();
 
 		try{
 			if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
 				Response new_response = client.newCall(new_Request).execute();
 				JSONObject new_JSONOBJECT = new JSONObject(new_Request.body().toString());
-				if(new_ResponseBody.get("status").toString().equals("OK") == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				if(new_JSONOBJECT.get("status").toString().equals("OK") == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			}
 		} catch(Exception e){
-			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			e.printStackTrace();
 		}
 		response.put("msg", new_dbQueryStatus.getMessage());
