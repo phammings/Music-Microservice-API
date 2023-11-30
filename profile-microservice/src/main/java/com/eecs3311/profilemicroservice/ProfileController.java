@@ -53,8 +53,11 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
+		DbQueryStatus dbQueryStatus = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
+		response.put("msg", dbQueryStatus.getMessage());
+		return Utils.setResponsible(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 
-		return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	@RequestMapping(value = "/followFriend", method = RequestMethod.PUT)
