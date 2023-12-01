@@ -26,6 +26,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Controller class for handling profile-related HTTP requests in the profile microservice.
+ * This class provides endpoints for managing user profiles and their interactions with playlists.
+ *
+ * <p>It includes methods for adding a profile, following and unfollowing friends, and liking
+ * or unliking songs. These methods interact with the {@link ProfileDriverImpl} and
+ * {@link PlaylistDriverImpl} to perform the necessary operations.
+ */
 @RestController
 @RequestMapping
 public class ProfileController {
@@ -43,11 +51,24 @@ public class ProfileController {
 
 	OkHttpClient client = new OkHttpClient();
 
+	/**
+	 * Constructs a ProfileController with the specified profile and playlist drivers.
+	 *
+	 * @param profileDriver The driver for handling profile operations.
+	 * @param playlistDriver The driver for handling playlist operations.
+	 */
 	public ProfileController(ProfileDriverImpl profileDriver, PlaylistDriverImpl playlistDriver) {
 		this.profileDriver = profileDriver;
 		this.playlistDriver = playlistDriver;
 	}
 
+	/**
+	 * Endpoint for adding a new user profile.
+	 *
+	 * @param params A map containing user details such as userName, fullName, and password.
+	 * @param request The HTTP request object.
+	 * @return ResponseEntity containing the operation status.
+	 */
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addProfile(@RequestBody Map<String, String> params, HttpServletRequest request) {
 
@@ -61,6 +82,13 @@ public class ProfileController {
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
+	/**
+	 * Endpoint for following a friend.
+	 *
+	 * @param params A map containing the usernames of the user and the friend to follow.
+	 * @param request The HTTP request object.
+	 * @return ResponseEntity containing the operation status.
+	 */
 	@RequestMapping(value = "/followFriend", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> followFriend(@RequestBody Map<String, String> params, HttpServletRequest request) {
 
@@ -77,6 +105,13 @@ public class ProfileController {
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
+	/**
+	 * Endpoint for retrieving all favourite song titles of a user's friends.
+	 *
+	 * @param userName The username of the user.
+	 * @param request The HTTP request object.
+	 * @return ResponseEntity containing the operation status.
+	 */
 	@RequestMapping(value = "/getAllFriendFavouriteSongTitles/{userName}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getAllFriendFavouriteSongTitles(@PathVariable("userName") String userName,
 			HttpServletRequest request) {
@@ -92,7 +127,13 @@ public class ProfileController {
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
-
+	/**
+	 * Endpoint for unfollowing a friend.
+	 *
+	 * @param params A map containing the usernames of the user and the friend to unfollow.
+	 * @param request The HTTP request object.
+	 * @return ResponseEntity containing the operation status.
+	 */
 	@RequestMapping(value = "/unfollowFriend", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> unfollowFriend(@RequestBody Map<String, String> params, HttpServletRequest request) {
 
@@ -107,6 +148,14 @@ public class ProfileController {
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
+
+	/**
+	 * Endpoint for liking a song.
+	 *
+	 * @param params A map containing the username of the user and the ID of the song to like.
+	 * @param request The HTTP request object.
+	 * @return ResponseEntity containing the operation status.
+	 */
 	@RequestMapping(value = "/likeSong", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> likeSong(@RequestBody Map<String, String> params, HttpServletRequest request) {
 
@@ -140,6 +189,13 @@ public class ProfileController {
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
+	/**
+	 * Endpoint for unliking a song.
+	 *
+	 * @param params A map containing the username of the user and the ID of the song to unlike.
+	 * @param request The HTTP request object.
+	 * @return ResponseEntity containing the operation status.
+	 */
 	@RequestMapping(value = "/unlikeSong", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> unlikeSong(@RequestBody Map<String, String> params, HttpServletRequest request) {
 
