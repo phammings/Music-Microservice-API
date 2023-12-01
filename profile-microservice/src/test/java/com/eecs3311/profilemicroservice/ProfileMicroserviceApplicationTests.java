@@ -9,8 +9,92 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class ProfileMicroserviceApplicationTests {
 
+	//	Profile JUnit Test Cases
 	@Test
-	public void contextLoads() {
+	public void testCreateUserProfile_1() {
+		//	QUERY_OK Test
+	}
+
+	@Test
+	public void testCreateUserProfile_2() {
+		//	QUERY_ERROR_GENERIC Test
+	}
+
+	@Test
+	public void testFollowFriend_1() {
+		//	QUERY_OK Test
+	}
+
+	@Test
+	public void testFollowFriend_2() {
+		//	QUERY_ERROR_NOT_FOUND Test
+	}
+
+	@Test
+	public void testFollowFriend_3() {
+		//	QUERY_ERROR_GENERIC Test
+	}
+
+	@Test
+	public void testUnfollowFriend_1() {
+		//	QUERY_OK Test
+	}
+
+	@Test
+	public void testUnfollowFriend_2() {
+		//	QUERY_ERROR_NOT_FOUND Test
+	}
+
+	@Test
+	public void testUnfollowFriend_3() {
+		//	QUERY_ERROR_GENERIC Test
+	}
+
+	@Test
+	public void testGetAllSongFriendsLike_1() {
+		//	QUERY_OK Test
+	}
+
+	@Test
+	public void testGetAllSongFriendsLike_2() {
+		//	QUERY_ERROR_NOT_FOUND Test
+	}
+
+	@Test
+	public void testGetAllSongFriendsLike_3() {
+		//	QUERY_ERROR_GENERIC Test
+	}
+
+
+	//	Playlist JUnit Test Cases
+	@Test
+	public void testLikeSong_1() {
+		//	QUERY_OK Test
+	}
+
+	@Test
+	public void testLikeSong_2() {
+		//	QUERY_ERROR_NOT_FOUND Test
+	}
+
+	@Test
+	public void testLikeSong_3() {
+		//	QUERY_ERROR_GENERIC Test
+	}
+
+	@Test
+	public void testUnlikeSong_1() {
+		//	QUERY_OK Test
+	}
+
+	@Test
+	public void testUnlikeSong_2() {
+		//	QUERY_ERROR_NOT_FOUND Test
+	}
+
+	@Test
+	public void testUnlikeSong_3() {
+		//	QUERY_ERROR_GENERIC Test
 	}
 
 }
