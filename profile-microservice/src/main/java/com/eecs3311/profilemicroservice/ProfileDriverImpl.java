@@ -109,7 +109,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 				StatementResult frnd_exists = new_transaction.run("MATCH (n:profile {userName: $frndUserName}) RETURN n.userName as f", new_HashMap);
 
 				// if no user exists
-				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 
 				// if the user already follows the friend
 				StatementResult new_Statementresult = new_transaction.run("RETURN EXISTS( (:profile {userName: $userName})-[:follows]->(:profile {userName: $frndUserName}) ) as bool", new_HashMap);
@@ -153,7 +153,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 				StatementResult frnd_exists = new_transaction.run("MATCH (n:profile {userName: $frndUserName}) RETURN n.userName as f", new_HashMap);
 
 				// if no user exists
-				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 
 				// user does not follow anyone yet
 				StatementResult new_Statementresult = new_transaction.run("RETURN EXISTS( (:profile {userName: $userName})-[:follows]->(:profile {userName: $frndUserName}) ) as bool", new_HashMap);
