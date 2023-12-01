@@ -125,7 +125,12 @@ public class Song {
 	 */
 	public String getSongReleaseDate() { return songReleaseDate; }
 
-	public void getSongReleaseDate(String songReleaseDate) { this.songReleaseDate = songReleaseDate; }
+	/**
+	 * Sets the release date of the song.
+	 *
+	 * @param songReleaseDate The release date to set.
+	 */
+	public void setSongReleaseDate(String songReleaseDate) { this.songReleaseDate = songReleaseDate; }
 
 	// ObjectId needs to be converted to string
 	/**
