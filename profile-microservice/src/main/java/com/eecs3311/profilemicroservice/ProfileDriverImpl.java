@@ -13,11 +13,25 @@ import org.neo4j.driver.v1.StatementResult;
 import org.springframework.stereotype.Repository;
 import org.neo4j.driver.v1.Transaction;
 
+/**
+ * Implementation of the {@link ProfileDriver} interface using Neo4j as the database.
+ * This class provides concrete methods for profile-related operations including
+ * creating user profiles, following and unfollowing friends, and retrieving songs liked
+ * by friends.
+ *
+ * <p>The class interacts with the Neo4j database using its driver and sessions to execute
+ * database operations, handling profile-related data persistently.
+ */
 @Repository
 public class ProfileDriverImpl implements ProfileDriver {
 
 	Driver driver = ProfileMicroserviceApplication.driver;
 
+	/**
+	 * Initializes the profile database by setting up necessary constraints.
+	 * This method is called to ensure the profile database is properly configured
+	 * before performing any operations.
+	 */
 	public static void InitProfileDb() {
 		String queryStr;
 
@@ -44,7 +58,15 @@ public class ProfileDriverImpl implements ProfileDriver {
 			session.close();
 		}
 	}
-	
+
+	/**
+	 * Creates a new user profile in the database.
+	 *
+	 * @param userName The username for the new profile.
+	 * @param fullName The full name of the user.
+	 * @param password The password for the new profile.
+	 * @return {@link DbQueryStatus} indicating the result of the profile creation operation.
+	 */
 	@Override
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
 		if(userName == null || fullName == null || password == null) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
@@ -65,6 +87,13 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	}
 
+	/**
+	 * Allows a user to follow another user.
+	 *
+	 * @param userName The username of the user who wants to follow.
+	 * @param frndUserName The username of the friend to be followed.
+	 * @return {@link DbQueryStatus} indicating the result of the follow operation.
+	 */
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
 		boolean alreadyFollows = false;
@@ -101,6 +130,13 @@ public class ProfileDriverImpl implements ProfileDriver {
 		//return null;
 	}
 
+	/**
+	 * Allows a user to unfollow another user.
+	 *
+	 * @param userName The username of the user who wants to unfollow.
+	 * @param frndUserName The username of the friend to be unfollowed.
+	 * @return {@link DbQueryStatus} indicating the result of the unfollow operation.
+	 */
 	@Override
 	public DbQueryStatus unfollowFriend(String userName, String frndUserName) {
 		boolean alreadyFollows = false;
@@ -139,6 +175,12 @@ public class ProfileDriverImpl implements ProfileDriver {
 		//return null;
 	}
 
+	/**
+	 * Retrieves all songs liked by a user's friends.
+	 *
+	 * @param userName The username of the user whose friends' liked songs are to be retrieved.
+	 * @return {@link DbQueryStatus} containing the result of the retrieval operation along with the list of songs.
+	 */
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
 		String query;
