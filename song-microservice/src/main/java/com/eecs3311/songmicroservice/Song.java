@@ -173,6 +173,7 @@ public class Song {
 		jsonRepresentation.put("songName", this.songName);
 		jsonRepresentation.put("songArtistFullName", this.songArtistFullName);
 		jsonRepresentation.put("songAlbum", this.songAlbum);
+		jsonRepresentation.put("songReleaseDate", this.songReleaseDate);
 		jsonRepresentation.put("songAmountFavourites", String.valueOf(this.songAmountFavourites));
 		
 		return jsonRepresentation;
