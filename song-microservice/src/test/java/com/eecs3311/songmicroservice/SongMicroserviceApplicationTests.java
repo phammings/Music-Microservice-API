@@ -80,4 +80,37 @@ public class SongMicroserviceApplicationTests {
 		assertEquals(status.getdbQueryExecResult(), DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 	}
 
+	@Test
+	public void testGetSongTitleById_1() {
+		MongoClient mongoClient = new MongoClient();
+		MongoTemplate db = new MongoTemplate(mongoClient, "test");
+		SongDalImpl test = new SongDalImpl(db);
+
+		Song song = new Song("No More Parties in LA","Kanye West", "The Life of Pablo", "January 18th, 2016");
+		ObjectId objectId = new ObjectId();
+		song.setId(objectId);
+
+		test.addSong(song);
+		DbQueryStatus status = test.getSongTitleById(song.getId());
+
+		assertEquals(status.getdbQueryExecResult(), DbQueryExecResult.QUERY_OK);
+	}
+
+	@Test
+	public void testGetSongTitleById_2() {
+		MongoClient mongoClient = new MongoClient();
+		MongoTemplate db = new MongoTemplate(mongoClient, "test");
+		SongDalImpl test = new SongDalImpl(db);
+
+		Song song = new Song("No More Parties in LA","Kanye West", "The Life of Pablo", "January 18th, 2016");
+		ObjectId objectId = new ObjectId();
+		ObjectId objectId2 = new ObjectId();
+		song.setId(objectId);
+
+		test.addSong(song);
+		DbQueryStatus status = test.getSongTitleById(objectId2.toHexString());
+
+		assertEquals(status.getdbQueryExecResult(), DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+	}
+
 }
