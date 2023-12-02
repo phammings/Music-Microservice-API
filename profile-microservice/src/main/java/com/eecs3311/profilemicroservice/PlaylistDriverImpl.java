@@ -63,7 +63,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 		if (userName == null || songId == null) return new DbQueryStatus("Error Liking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		try (Session new_session = driver.session()) {
 			Map<String, Object> new_HashMap = new HashMap<>();
-			new_HashMap.put("playlistName", userName + "-favourites");
+			new_HashMap.put("plName", userName + "-favourites");
 			new_HashMap.put("songId", songId);
 
 			try (Transaction new_transaction = new_session.beginTransaction()) {
@@ -111,12 +111,12 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 		if (userName == null && songId == null) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		try (Session new_session = driver.session()) {
 			Map<String, Object> new_HashMap = new HashMap<>();
-			new_HashMap.put("playlistName", userName + "-favourites");
+			new_HashMap.put("plName", userName + "-favourites");
 			new_HashMap.put("songId", songId);
 
 			try (Transaction new_transaction = new_session.beginTransaction()) {
 				// if user playlist exist
-				query = "MATCH (p:playlist {playlistName: $plName}) RETURN p";
+				query = "MATCH (p:playlist {plName: $plName}) RETURN p";
 				new_StatementResult = new_transaction.run(query, new_HashMap);
 				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
 
@@ -126,7 +126,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 				if (new_StatementResult.hasNext() == true) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
 
 				// if relationship between nodes exist
-				query = "MATCH (p:playlist {playlistName: $playlistName})-[r:includes]->(s:song {songId: $songId}) RETURN r";
+				query = "MATCH (p:playlist {plName: $plName})-[r:includes]->(s:song {songId: $songId}) RETURN r";
 				new_StatementResult = new_transaction.run(query, new_HashMap);
 				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
 				query = "MATCH (p:playlist {plName: $plName})-[r:includes]->(s:song {songId: $songId}) DELETE r";
