@@ -78,7 +78,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			new_HashMap.put("playlistName", userName + "-favourites");
 			new_session.writeTransaction((Transaction new_transaction) -> new_transaction.run("CREATE (m:profile {userName: $userName, fullName: $fullName, password: $password})-[r:created]->(n:playlist {playlistName: playlistName})", new_HashMap));
 			new_session.close();
-			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_OK);
+			return new DbQueryStatus(DbQueryExecResult.QUERY_OK);
 
 		} catch(Exception e){
 			System.out.println(e);
