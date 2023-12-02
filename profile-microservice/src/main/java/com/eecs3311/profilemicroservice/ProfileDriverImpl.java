@@ -69,7 +69,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
-		if(userName == null || fullName == null || password == null) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		if(userName == null || fullName == null || password == null) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 		try (Session new_session = driver.session()){
 			Map<String, Object> new_HashMap = new HashMap<>();
 			new_HashMap.put("userName", userName);
@@ -82,7 +82,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 		} catch(Exception e){
 			System.out.println(e);
-			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+			return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
 
 	}
@@ -97,8 +97,8 @@ public class ProfileDriverImpl implements ProfileDriver {
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
 		boolean alreadyFollows = false;
-		if(userName == null || frndUserName == null) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		if(userName.equals(frndUserName)) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		if(userName == null || frndUserName == null) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
+		if(userName.equals(frndUserName)) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 		try(Session new_session = driver.session()){
 			Map<String, Object> new_HashMap = new HashMap<>();
 			new_HashMap.put("userName", userName);
@@ -109,23 +109,23 @@ public class ProfileDriverImpl implements ProfileDriver {
 				StatementResult frnd_exists = new_transaction.run("MATCH (n:profile {userName: $frndUserName}) RETURN n.userName as f", new_HashMap);
 
 				// if no user exists
-				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 
 				// if the user already follows the friend
 				StatementResult new_Statementresult = new_transaction.run("RETURN EXISTS( (:profile {userName: $userName})-[:follows]->(:profile {userName: $frndUserName}) ) as bool", new_HashMap);
 				if (new_Statementresult.hasNext() == true) {
 					Record new_Record = new_Statementresult.next();
 					alreadyFollows = new_Record.get("bool").asBoolean();
-					if (alreadyFollows == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+					if (alreadyFollows == false) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 					new_transaction.run("MATCH (p1:profile),(p2:profile) \n WHERE p1.userName = $userName AND p2.userName = $frndUserName \nCREATE (p1)-[r:follows]->(p2)", new_HashMap);
 					new_transaction.success();
 				}
 			}
 			new_session.close();
-			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_OK);
+			return new DbQueryStatus(DbQueryExecResult.QUERY_OK);
 
 		}catch (Exception e){
-			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+			return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
 		//return null;
 	}
@@ -140,8 +140,8 @@ public class ProfileDriverImpl implements ProfileDriver {
 	@Override
 	public DbQueryStatus unfollowFriend(String userName, String frndUserName) {
 		boolean alreadyFollows = false;
-		if(userName == null || frndUserName == null) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		if(userName.equals(frndUserName)) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		if(userName == null || frndUserName == null) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
+		if(userName.equals(frndUserName)) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 
 		try (Session new_session = driver.session()) {
 			Map<String, Object> new_HashMap = new HashMap<>();
@@ -153,24 +153,24 @@ public class ProfileDriverImpl implements ProfileDriver {
 				StatementResult frnd_exists = new_transaction.run("MATCH (n:profile {userName: $frndUserName}) RETURN n.userName as f", new_HashMap);
 
 				// if no user exists
-				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 
 				// user does not follow anyone yet
 				StatementResult new_Statementresult = new_transaction.run("RETURN EXISTS( (:profile {userName: $userName})-[:follows]->(:profile {userName: $frndUserName}) ) as bool", new_HashMap);
 				if (new_Statementresult.hasNext() == true){
 					Record new_Record = new_Statementresult.next();
 					alreadyFollows = new_Record.get("bool").asBoolean();
-					if (alreadyFollows == true) return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+					if (alreadyFollows == true) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 					new_transaction.run("MATCH (n:profile { userName: $userName })-[r:follows]->(m:profile { userName: $frndUserName }) DELETE r", new_HashMap);
 					new_transaction.success();
 				}
 			}
 
 			new_session.close();
-			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_OK);
+			return new DbQueryStatus(DbQueryExecResult.QUERY_OK);
 
 		} catch (Exception e) {
-			return new DbQueryStatus("POST", DbQueryExecResult.QUERY_ERROR_GENERIC);
+			return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
 		//return null;
 	}
@@ -186,8 +186,8 @@ public class ProfileDriverImpl implements ProfileDriver {
 		String query;
 		StatementResult user_StatementResult;
 		StatementResult song_StatementResult;
-		DbQueryStatus dbQueryStatus = new DbQueryStatus("GET", DbQueryExecResult.QUERY_OK);
-		if (userName == null) new DbQueryStatus("GET", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		DbQueryStatus dbQueryStatus = new DbQueryStatus(DbQueryExecResult.QUERY_OK);
+		if (userName == null) new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 
 		try (Session new_session = driver.session()) {
 			Map<String, Object> new_HashMap = new HashMap<>();
@@ -200,7 +200,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 				user_StatementResult = new_transaction.run(query, new_HashMap);
 				Map<String, Object> song_HashMap = new HashMap<>();
 				query = "MATCH (c:playlist {playlistName: $userName + '-favourites'})-[:includes]->(s:song) RETURN collect(s.songName) as songs";
-				if (user_StatementResult.hasNext() == false) return new DbQueryStatus("GET", DbQueryExecResult.QUERY_ERROR_GENERIC);
+				if (user_StatementResult.hasNext() == false) return new DbQueryStatus(DbQueryExecResult.QUERY_ERROR_GENERIC);
 				List<Object> user_followers = user_StatementResult.next().get("userName").asList();
 				for (Object f : user_followers) {
 					new_HashMap.put("userName", (String) f);
