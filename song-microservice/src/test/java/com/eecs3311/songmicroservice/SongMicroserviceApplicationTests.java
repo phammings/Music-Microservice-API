@@ -174,8 +174,11 @@ public class SongMicroserviceApplicationTests {
 		song.setId(objectId);
 
 		test.addSong(song);
-		DbQueryStatus status = test.updateSongFavouritesCount(song.getId(), false);
+		long likeCount = song.getSongAmountFavourites();
+		DbQueryStatus status = test.updateSongFavouritesCount(song.getId(), true);
+		long likeCountAfter = song.getSongAmountFavourites();
 
+		assertEquals(likeCount, likeCountAfter+1);
 		assertEquals(status.getdbQueryExecResult(), DbQueryExecResult.QUERY_OK);
 	}
 
