@@ -116,26 +116,6 @@ public class SongController {
 
 		DbQueryStatus status = songDal.deleteSongById(songId);
 
-		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:3001/getSongById/";
-			url += songId;
-			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
-
-			try (Response responseForm = this.client.newCall(requestForm).execute()) {
-				JSONObject JSONrequest = new JSONObject(responseForm.body().string());
-				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
-				if (!isRequestSuccessful) {
-					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				}
-				else {
-					status.setdbQueryExecResult(DbQueryExecResult.QUERY_OK);
-				}
-			} catch (IOException e) {
-				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
-				e.printStackTrace();
-			}
-		}
-
 		response.put("message", status.getMessage());
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
@@ -161,23 +141,6 @@ public class SongController {
 
 		Song song = new Song(artistName, songName, album, releaseDate);
 		DbQueryStatus status = songDal.addSong(song);
-
-		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:3001/getSongById/";
-			url += song.getId();
-			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
-
-			try (Response responseForm = this.client.newCall(requestForm).execute()) {
-				JSONObject JSONrequest = new JSONObject(responseForm.body().string());
-				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
-				if (!isRequestSuccessful) {
-					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				}
-			} catch (IOException e) {
-				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
-				e.printStackTrace();
-			}
-		}
 
 		response.put("message", status.getMessage());
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
