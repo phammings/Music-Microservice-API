@@ -65,7 +65,11 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testUnfollowFriend_1() {
 		//	QUERY_OK Test
+		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
+		DbQueryStatus status = profileDriverImpl.unfollowFriend("user", "user2");
+		assertEquals(DbQueryExecResult.QUERY_OK, status.getDbQueryExecResult());
 	}
 
 	@Test
