@@ -75,7 +75,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			new_HashMap.put("userName", userName);
 			new_HashMap.put("fullName", fullName);
 			new_HashMap.put("password", password);
-			new_HashMap.put("playlistName", userName + "-favourites");
+			new_HashMap.put("plName", userName + "-favourites");
 			new_session.writeTransaction((Transaction new_transaction) -> new_transaction.run("CREATE (m:profile {userName: $userName, fullName: $fullName, password: $password})-[r:created]->(n:playlist {playlistName: playlistName})", new_HashMap));
 			new_session.close();
 			return new DbQueryStatus("Success Creating Profile", DbQueryExecResult.QUERY_OK);
@@ -199,7 +199,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 				query = "MATCH (p1:profile {userName: $userName})-[:follows]->(p2:profile) RETURN collect(p2.userName) as userName";
 				user_StatementResult = new_transaction.run(query, new_HashMap);
 				Map<String, Object> song_HashMap = new HashMap<>();
-				query = "MATCH (c:playlist {playlistName: $userName + '-favourites'})-[:includes]->(s:song) RETURN collect(s.songName) as songs";
+				query = "MATCH (c:playlist {plName: $userName + '-favourites'})-[:includes]->(s:song) RETURN collect(s.songName) as songs";
 				if (user_StatementResult.hasNext() == false) return new DbQueryStatus("Error Getting All Friend's Songs", DbQueryExecResult.QUERY_ERROR_GENERIC);
 				List<Object> user_followers = user_StatementResult.next().get("userName").asList();
 				for (Object f : user_followers) {
