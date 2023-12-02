@@ -44,6 +44,11 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testFollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
+		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
+
+		DbQueryStatus status = profileDriverImpl.followFriend("user", "Mr.69BombasticChad");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, status.getDbQueryExecResult());
 
 	}
 
