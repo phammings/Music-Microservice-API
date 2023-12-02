@@ -116,7 +116,11 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testGetAllSongFriendsLike_3() {
 		//	QUERY_ERROR_GENERIC Test
+		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
+		DbQueryStatus status = profileDriverImpl.getAllSongFriendsLike("KonichiwaMeowMeow");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, status.getDbQueryExecResult());
 	}
 
 
