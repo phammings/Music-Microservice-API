@@ -131,8 +131,8 @@ public class ProfileMicroserviceApplicationTests {
 		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
-		DbQueryStatus status = playlistDriverImpl.likeSong("user", "userID");
-		assertEquals(DbQueryExecResult.QUERY_OK, status.getDbQueryExecResult());
+		DbQueryStatus test_status = playlistDriverImpl.likeSong("user", "userID");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
 	}
 
 	@Test
@@ -141,8 +141,8 @@ public class ProfileMicroserviceApplicationTests {
 		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
-		DbQueryStatus status = playlistDriverImpl.likeSong("user", "jingalalahuhu");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, status.getDbQueryExecResult());
+		DbQueryStatus test_status = playlistDriverImpl.likeSong("user", "jingalalahuhu");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getDbQueryExecResult());
 	}
 
 	@Test
@@ -151,8 +151,8 @@ public class ProfileMicroserviceApplicationTests {
 		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
-		DbQueryStatus status = playlistDriverImpl.likeSong(null, null);
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, status.getDbQueryExecResult());
+		DbQueryStatus test_status = playlistDriverImpl.likeSong(null, null);
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
 	}
 
 	@Test
@@ -161,8 +161,8 @@ public class ProfileMicroserviceApplicationTests {
 		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
-		DbQueryStatus status = playlistDriverImpl.unlikeSong("user", "userID");
-		assertEquals(DbQueryExecResult.QUERY_OK, status.getDbQueryExecResult());
+		DbQueryStatus test_status = playlistDriverImpl.unlikeSong("user", "userID");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
 	}
 
 	@Test
@@ -171,13 +171,18 @@ public class ProfileMicroserviceApplicationTests {
 		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
-		DbQueryStatus status = playlistDriverImpl.unlikeSong("user", "yourPhoneLingingEatMyBlingBling");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, status.getDbQueryExecResult());
+		DbQueryStatus test_status = playlistDriverImpl.unlikeSong("user", "yourPhoneLingingEatMyBlingBling");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getDbQueryExecResult());
 	}
 
 	@Test
 	public void testUnlikeSong_3() {
 		//	QUERY_ERROR_GENERIC Test
+		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
+
+		DbQueryStatus test_status = playlistDriverImpl.unlikeSong(null, null);
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
 	}
 
 }
