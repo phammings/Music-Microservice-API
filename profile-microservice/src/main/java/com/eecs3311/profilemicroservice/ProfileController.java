@@ -76,7 +76,7 @@ public class ProfileController {
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
 		// Done for now, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
-		response.put("msg", new_dbQueryStatus.getMessage());
+		response.put("message", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response, new_dbQueryStatus.getdbQueryExecResult(), new_dbQueryStatus.getData());
 
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
@@ -98,7 +98,7 @@ public class ProfileController {
 
 		// Done, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.followFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
-		response.put("msg", new_dbQueryStatus.getMessage());
+		response.put("message", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 
 
@@ -114,7 +114,7 @@ public class ProfileController {
 	 */
 	@RequestMapping(value = "/getAllFriendFavouriteSongTitles/{userName}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getAllFriendFavouriteSongTitles(@PathVariable("userName") String userName,
-			HttpServletRequest request) {
+																			   HttpServletRequest request) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
@@ -122,7 +122,7 @@ public class ProfileController {
 
 		// Done, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.getAllSongFriendsLike(userName);
-		response.put("msg", new_dbQueryStatus.getMessage());
+		response.put("message", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
@@ -143,7 +143,7 @@ public class ProfileController {
 
 		// Done, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.unfollowFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
-		response.put("msg", new_dbQueryStatus.getMessage());
+		response.put("message", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
@@ -184,7 +184,7 @@ public class ProfileController {
 			new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			e.printStackTrace();
 		}
-		response.put("msg", new_dbQueryStatus.getMessage());
+		response.put("message", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
@@ -224,7 +224,7 @@ public class ProfileController {
 			new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			e.printStackTrace();
 		}
-		response.put("msg", new_dbQueryStatus.getMessage());
+		response.put("message", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
