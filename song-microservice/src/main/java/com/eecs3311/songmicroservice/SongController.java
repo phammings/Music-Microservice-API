@@ -117,7 +117,7 @@ public class SongController {
 		DbQueryStatus status = songDal.deleteSongById(songId);
 
 		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:3002/deleteAllSongsFromDb/";
+			String url = "http://localhost:3001/getSongById/";
 			url += songId;
 			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
 
@@ -126,6 +126,9 @@ public class SongController {
 				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
 				if (!isRequestSuccessful) {
 					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				}
+				else {
+					status.setdbQueryExecResult(DbQueryExecResult.QUERY_OK);
 				}
 			} catch (IOException e) {
 				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
@@ -160,7 +163,7 @@ public class SongController {
 		DbQueryStatus status = songDal.addSong(song);
 
 		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:3002/deleteAllSongsFromDb/";
+			String url = "http://localhost:3001/getSongById/";
 			url += song.getId();
 			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
 
