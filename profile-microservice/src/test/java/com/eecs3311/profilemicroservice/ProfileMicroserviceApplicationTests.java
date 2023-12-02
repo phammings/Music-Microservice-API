@@ -13,7 +13,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testCreateUserProfile_1() {
 		//	QUERY_OK Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.createUserProfile("user", "new user", "password");
@@ -23,7 +23,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testCreateUserProfile_2() {
 		//	QUERY_ERROR_GENERIC Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.createUserProfile(null, null, null);
@@ -34,7 +34,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testFollowFriend_1() {
 		//	QUERY_OK Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.followFriend("user", "user2");
@@ -44,7 +44,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testFollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.followFriend("user", "Mr.69BombasticChad");
@@ -55,7 +55,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testFollowFriend_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.followFriend("user", "user");
@@ -65,7 +65,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testUnfollowFriend_1() {
 		//	QUERY_OK Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.unfollowFriend("user", "user2");
@@ -75,7 +75,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testUnfollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.unfollowFriend("user", "MasterOogway");
@@ -85,7 +85,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testUnfollowFriend_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.unfollowFriend("user", "user");
@@ -95,7 +95,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testGetAllSongFriendsLike_1() {
 		//	QUERY_OK Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.getAllSongFriendsLike("user");
@@ -106,7 +106,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testGetAllSongFriendsLike_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.getAllSongFriendsLike("newUser");
@@ -116,7 +116,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testGetAllSongFriendsLike_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = profileDriverImpl.getAllSongFriendsLike("KonichiwaMeowMeow");
@@ -128,7 +128,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testLikeSong_1() {
 		//	QUERY_OK Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = playlistDriverImpl.likeSong("user", "userID");
@@ -138,7 +138,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testLikeSong_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = playlistDriverImpl.likeSong("user", "jingalalahuhu");
@@ -148,7 +148,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testLikeSong_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = playlistDriverImpl.likeSong(null, null);
@@ -158,7 +158,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testUnlikeSong_1() {
 		//	QUERY_OK Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = playlistDriverImpl.unlikeSong("user", "userID");
@@ -168,7 +168,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testUnlikeSong_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = playlistDriverImpl.unlikeSong("user", "yourPhoneLingingEatMyBlingBling");
@@ -178,7 +178,7 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testUnlikeSong_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
 		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
 		DbQueryStatus test_status = playlistDriverImpl.unlikeSong(null, null);
