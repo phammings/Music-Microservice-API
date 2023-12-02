@@ -1,7 +1,14 @@
 package com.eecs3311.profilemicroservice;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Config;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -11,127 +18,96 @@ public class ProfileMicroserviceApplicationTests {
 
 	//	Profile JUnit Test Cases
 	@Test
-	public void testCreateUserProfile_1() {
-		//	QUERY_OK Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
+	public void testCreateUserProfile_1() {//	QUERY_OK Test
 
-		DbQueryStatus test_status = profileDriverImpl.createUserProfile("user", "new user", "password");
-		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.createUserProfile("user", "new user", "password");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testCreateUserProfile_2() {
 		//	QUERY_ERROR_GENERIC Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.createUserProfile(null, null, null);
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.createUserProfile(null, null, null);
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
 
 	}
 
 	@Test
 	public void testFollowFriend_1() {
 		//	QUERY_OK Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.followFriend("user", "user2");
-		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.followFriend("user", "user2");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testFollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.followFriend("user", "Mr.69BombasticChad");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.followFriend("user", "Mr.69BombasticChad");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 
 	}
 
 	@Test
 	public void testFollowFriend_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.followFriend("user", "user");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.followFriend("user", "user");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testUnfollowFriend_1() {
 		//	QUERY_OK Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 
-		DbQueryStatus test_status = profileDriverImpl.unfollowFriend("user", "user2");
-		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
+		DbQueryStatus test_status = pDriver.unfollowFriend("user", "user2");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testUnfollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 
-		DbQueryStatus test_status = profileDriverImpl.unfollowFriend("user", "MasterOogway");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getDbQueryExecResult());
+		DbQueryStatus test_status = pDriver.unfollowFriend("user", "MasterOogway");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testUnfollowFriend_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.unfollowFriend("user", "user");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.unfollowFriend("user", "user");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testGetAllSongFriendsLike_1() {
 		//	QUERY_OK Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.getAllSongFriendsLike("user");
-		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.getAllSongFriendsLike("user");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 		assertNotNull(test_status.getData());
 	}
 
 	@Test
 	public void testGetAllSongFriendsLike_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.getAllSongFriendsLike("newUser");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.getAllSongFriendsLike("newUser");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testGetAllSongFriendsLike_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = profileDriverImpl.getAllSongFriendsLike("KonichiwaMeowMeow");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+		DbQueryStatus test_status = pDriver.getAllSongFriendsLike("KonichiwaMeowMeow");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
 	}
 
 
@@ -139,67 +115,49 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testLikeSong_1() {
 		//	QUERY_OK Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = playlistDriverImpl.likeSong("user", "userID");
-		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
+		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
+		DbQueryStatus test_status = pDriver.likeSong("user", "userID");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testLikeSong_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = playlistDriverImpl.likeSong("user", "jingalalahuhu");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getDbQueryExecResult());
+		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
+		DbQueryStatus test_status = pDriver.likeSong("user", "jingalalahuhu");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testLikeSong_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = playlistDriverImpl.likeSong(null, null);
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
+		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
+		DbQueryStatus test_status = pDriver.likeSong(null, null);
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testUnlikeSong_1() {
 		//	QUERY_OK Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = playlistDriverImpl.unlikeSong("user", "userID");
-		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getDbQueryExecResult());
+		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
+		DbQueryStatus test_status = pDriver.unlikeSong("user", "userID");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testUnlikeSong_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = playlistDriverImpl.unlikeSong("user", "yourPhoneLingingEatMyBlingBling");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getDbQueryExecResult());
+		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
+		DbQueryStatus test_status = pDriver.unlikeSong("user", "yourPhoneLingingEatMyBlingBling");
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 	}
 
 	@Test
 	public void testUnlikeSong_3() {
 		//	QUERY_ERROR_GENERIC Test
-		Config config = Config.builder().withoutEncryption().build();
-		Driver test_driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
-		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
-
-		DbQueryStatus test_status = playlistDriverImpl.unlikeSong(null, null);
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getDbQueryExecResult());
+		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
+		DbQueryStatus test_status = pDriver.unlikeSong(null, null);
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
 	}
 
 }
