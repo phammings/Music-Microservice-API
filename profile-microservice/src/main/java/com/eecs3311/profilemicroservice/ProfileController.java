@@ -24,6 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/// My imports
+import okhttp3.*;
+import org.json.JSONObject;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -165,18 +169,20 @@ public class ProfileController {
 
 		// Done need to test
 		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
+		String url = "http://localhost:3001/updateSongFavouritesCount/";
+		String song_url =  url + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
 
 		try{
 			if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)){
-				Response new_response = client.newCall(new_Request).execute();
-				String json_str = new_Request.body().toString();
-				try{
+				try(Response new_response = this.client.newCall(new_Request).execute()){
+					String json_str = new_Request.body().toString();
 					JSONObject new_JSONOBJECT = new JSONObject(json_str);
-					if(new_JSONOBJECT.get("status").toString().equals("OK") == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+					boolean json_status = new_JSONOBJECT.get("status").toString().equals("OK");
+					if(json_status == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 					else if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND)) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_OK);
-				} catch(JSONException e){
+				} catch(IOException e){
+					new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 					e.printStackTrace();
 				}
 			}
@@ -205,18 +211,19 @@ public class ProfileController {
 
 
 		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
+		String url = "http://localhost:3001/updateSongFavouritesCount/";
+		String song_url = url + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
 
 		try{
 			if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-				Response new_response = client.newCall(new_Request).execute();
-				String json_str = new_Request.body().toString();
-				try{
+				try(Response new_response = client.newCall(new_Request).execute()){
+					String json_str = new_Request.body().toString();
 					JSONObject new_JSONOBJECT = new JSONObject(json_str);
-					if(new_JSONOBJECT.get("status").toString().equals("OK") == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
-
-				} catch(JSONException e){
+					boolean json_status = new_JSONOBJECT.get("status").toString().equals("OK");
+					if(json_status == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				} catch(IOException e){
+					new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 					e.printStackTrace();
 				}
 			}
