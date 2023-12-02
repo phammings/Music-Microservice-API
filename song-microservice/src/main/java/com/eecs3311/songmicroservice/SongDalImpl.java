@@ -2,7 +2,10 @@ package com.eecs3311.songmicroservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+
 
 /**
  * Implementation of the Song Data Access Layer (SongDal) interface using MongoDB.
@@ -132,6 +135,7 @@ public class SongDalImpl implements SongDal {
 			else {
 				song.setSongAmountFavourites(song.getSongAmountFavourites() + 1);
 			}
+			this.db.findAndReplace(new Query(where("_id").is(songId)), song);
 			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 			return status;
 		}
