@@ -23,7 +23,11 @@ public class ProfileMicroserviceApplicationTests {
 	@Test
 	public void testCreateUserProfile_2() {
 		//	QUERY_ERROR_GENERIC Test
+		Driver test_driver = GraphDatabase.driver("https://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+		ProfileDriverImpl test = new ProfileDriverImpl(test_driver);
 
+		DbQueryStatus status = profileDriverImpl.createUserProfile(null, null, null);
+		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, status.getDbQueryExecResult());
 
 	}
 
