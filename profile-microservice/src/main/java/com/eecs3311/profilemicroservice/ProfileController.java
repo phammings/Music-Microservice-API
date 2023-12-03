@@ -72,12 +72,10 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
-		// Done for now, need to test
+
 		DbQueryStatus status = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
-
-		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -92,15 +90,11 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in SongController.getSongById
 
-		// Done, need to test
 		DbQueryStatus status = profileDriver.followFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
 
-
-		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -116,11 +110,8 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in SongController.getSongById
 
-		// Done, need to test
 		DbQueryStatus dbQueryStatus = profileDriver.getAllSongFriendsLike(userName);
-
 		Map<String, List<String>> totalSongsFriendsLike = (Map<String, List<String>>) dbQueryStatus.getData();
 
 		totalSongsFriendsLike.entrySet().forEach(entry -> {
@@ -142,7 +133,6 @@ public class ProfileController {
 
 		response.put("msg", dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,dbQueryStatus.getdbQueryExecResult(), totalSongsFriendsLike);
-		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -157,13 +147,10 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in SongController.getSongById
 
-		// Done, need to test
 		DbQueryStatus status = profileDriver.unfollowFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
-		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 
@@ -179,9 +166,7 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in SongController.getSongById
 
-		// Done need to test
 		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request requestForm = new Request.Builder().url(url).build();
 
@@ -205,7 +190,6 @@ public class ProfileController {
 
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
-		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -220,7 +204,6 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
-		// TODO: add any other values to the map following the example in SongController.getSongById
 
 		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request requestForm = new Request.Builder().url(url).build();
@@ -245,7 +228,5 @@ public class ProfileController {
 
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
-
-		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 }
