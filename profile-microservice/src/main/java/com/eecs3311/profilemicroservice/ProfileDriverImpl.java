@@ -99,38 +99,26 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
-		boolean alreadyFollows = false;
-		if(userName == null || frndUserName == null) return new DbQueryStatus("Error Following Friend", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		if(userName.equals(frndUserName)) return new DbQueryStatus("Error Following Friend", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		try(Session new_session = driver.session()){
-			Map<String, Object> new_HashMap = new HashMap<>();
-			new_HashMap.put("userName", userName);
-			new_HashMap.put("frndUserName", frndUserName);
-
-			try (Transaction new_transaction = new_session.beginTransaction()) {
-				StatementResult user_exists = new_transaction.run("MATCH (n:profile {userName: $userName}) RETURN n.userName as u", new_HashMap);
-				StatementResult frnd_exists = new_transaction.run("MATCH (n:profile {userName: $frndUserName}) RETURN n.userName as f", new_HashMap);
-
-				// if no user exists
-				if (user_exists.hasNext() == false || frnd_exists.hasNext() == false) return new DbQueryStatus("Error Following Friend", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-
-				// if the user already follows the friend
-				StatementResult new_Statementresult = new_transaction.run("RETURN EXISTS( (:profile {userName: $userName})-[:follows]->(:profile {userName: $frndUserName}) ) as bool", new_HashMap);
-				if (new_Statementresult.hasNext() == true) {
-					Record new_Record = new_Statementresult.next();
-					alreadyFollows = new_Record.get("bool").asBoolean();
-					if (alreadyFollows == false) return new DbQueryStatus("Error Following Friend", DbQueryExecResult.QUERY_ERROR_GENERIC);
-					new_transaction.run("MATCH (p1:profile),(p2:profile) \n WHERE p1.userName = $userName AND p2.userName = $frndUserName \nCREATE (p1)-[r:follows]->(p2)", new_HashMap);
-					new_transaction.success();
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
-			}
-			new_session.close();
-			return new DbQueryStatus("Success Following Friend", DbQueryExecResult.QUERY_OK);
+				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", frndUserName)).list().isEmpty()) {
+					return new DbQueryStatus("friendUserName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				}
 
-		}catch (Exception e){
-			return new DbQueryStatus("Error Following Friend", DbQueryExecResult.QUERY_ERROR_GENERIC);
+				if (trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nRETURN f", userName, frndUserName)).list().isEmpty()) {
+					trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nCREATE (a)-[:follows]->(b) \nRETURN a,b", userName, frndUserName));
+					trans.success();
+					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+
+				}
+				trans.failure();
+				return new DbQueryStatus("Error userName already follows friendUserName", DbQueryExecResult.QUERY_ERROR_GENERIC);
+
+			}
 		}
-		//return null;
 	}
 
 	/**
