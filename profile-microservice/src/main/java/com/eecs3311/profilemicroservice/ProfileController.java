@@ -173,7 +173,7 @@ public class ProfileController {
 	 * @return ResponseEntity containing the operation status.
 	 */
 	@RequestMapping(value = "/likeSong", method = RequestMethod.PUT)
-	public ResponseEntity<Map<String, Object>> likeSong(@RequestBody Map<String, String> params, HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> likeSong(@RequestBody Map<String, String> params, HttpServletRequest request) throws IOException {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
@@ -183,28 +183,38 @@ public class ProfileController {
 		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request requestForm = new Request.Builder().url(url).build();
 		
-
+		try (Response responseForm =  client.newCall(requestForm).execute()) {
+			JSONObject json = new JSONObject(responseForm.body().string());
+			boolean isOK = json.get("status").equals("OK");
+			if (!isOK) {
+				response.put("msg", "songName not found");
+				Object songData = null;
+				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		DbQueryStatus status = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
 		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
 
-		try{
-			if(status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)){
-				Response new_response = client.newCall(new_Request).execute();
-				String json_str = new_Request.body().toString();
-				try{
-					JSONObject new_JSONOBJECT = new JSONObject(json_str);
-					if(new_JSONOBJECT.get("status").toString().equals("OK") == false) status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-					else if(status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND)) status.setdbQueryExecResult(DbQueryExecResult.QUERY_OK);
-				} catch(JSONException e){
-					e.printStackTrace();
+		if(status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
+			try (Response new_response = client.newCall(new_Request).execute()) {
+				JSONObject json = new JSONObject(new_response.body().string());
+				boolean isOK = json.get("status").equals("OK");
+				if (!isOK) {
+					response.put("msg", "songName cannot be liked");
+					Object songData = null;
+					return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_GENERIC, songData);
 				}
 			}
-		} catch(Exception e){
-			status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
-			e.printStackTrace();
+		 	catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
+
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
