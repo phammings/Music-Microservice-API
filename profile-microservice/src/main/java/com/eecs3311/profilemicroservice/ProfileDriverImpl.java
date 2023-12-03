@@ -134,11 +134,14 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus unfollowFriend(String userName, String frndUserName) {
+		if (userName.equals(frndUserName)) {
+			return new DbQueryStatus("Error userName cannot follow userName", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
 				if (trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \n" + "RETURN f", userName, frndUserName)).list().isEmpty()) {
 					trans.failure();
-					return new DbQueryStatus("Error userName not following friendUserName", DbQueryExecResult.QUERY_ERROR_GENERIC);
+					return new DbQueryStatus("Error userName not following friendUserName", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 				trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nDELETE f", userName, frndUserName));
 				trans.success();
