@@ -176,15 +176,15 @@ public class ProfileDriverImpl implements ProfileDriver {
 				Map<String, List<String>> totalSongsFriendsLike = new HashMap<String, List<String>>();
 				for (String name : allUsersNamesFollowed) {
 					name = name.substring(1, name.length()-1);
-					List<Record> songsResultRecords = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, name+"-favourites")).list();
-					if (songsResultRecords.isEmpty()) {
-						List<String> songs = songsResultRecords.stream()
+					List<Record> resultList = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, name+"-favourites")).list();
+					if (resultList.isEmpty()) {
+						List<String> songs = resultList.stream()
 								.map(song -> "")
 								.collect(Collectors.toList());
 						totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
 					}
 					else {
-						List<String> songs = songsResultRecords.stream()
+						List<String> songs = resultList.stream()
 								.map(song -> song.get(0).get("songId").toString().replace("\"", ""))
 								.collect(Collectors.toList());
 						totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
