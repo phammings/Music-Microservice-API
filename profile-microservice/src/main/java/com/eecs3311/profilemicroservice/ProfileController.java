@@ -1,5 +1,8 @@
 package com.eecs3311.profilemicroservice;
 
+import okhttp3.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,20 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eecs3311.profilemicroservice.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-/// My imports
-import okhttp3.*;
-import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -80,7 +74,7 @@ public class ProfileController {
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
 		// Done for now, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
-		response.put("message", new_dbQueryStatus.getMessage());
+		response.put("msg", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response, new_dbQueryStatus.getdbQueryExecResult(), new_dbQueryStatus.getData());
 
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
@@ -102,7 +96,7 @@ public class ProfileController {
 
 		// Done, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.followFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
-		response.put("message", new_dbQueryStatus.getMessage());
+		response.put("msg", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 
 
@@ -118,16 +112,34 @@ public class ProfileController {
 	 */
 	@RequestMapping(value = "/getAllFriendFavouriteSongTitles/{userName}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getAllFriendFavouriteSongTitles(@PathVariable("userName") String userName,
-																			   HttpServletRequest request) {
+			HttpServletRequest request) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
 
 		// Done, need to test
-		DbQueryStatus new_dbQueryStatus = profileDriver.getAllSongFriendsLike(userName);
-		response.put("message", new_dbQueryStatus.getMessage());
-		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
+		DbQueryStatus dbQueryStatus = profileDriver.getAllSongFriendsLike(userName);
+
+		Map<String, List<String>> totalSongsFriendsLike = (Map<String, List<String>>) dbQueryStatus.getData();
+
+		totalSongsFriendsLike.entrySet().forEach(entry -> {
+			String name = entry.getKey();
+			List<String> songName = new ArrayList<>();
+			for (String songId : totalSongsFriendsLike.get(name)) {
+				String url = "http://localhost:3001/getSongTitleById/" + songId;
+				Request req = new Request.Builder().url(url).build();
+				try (Response getReq = this.client.newCall(req).execute()) {
+					songName.add(getReq.body().string());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			entry.setValue(songName);
+		});
+
+		response.put("msg", dbQueryStatus.getMessage());
+		return Utils.setResponseStatus(response,dbQueryStatus.getdbQueryExecResult(), totalSongsFriendsLike);
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
@@ -147,7 +159,7 @@ public class ProfileController {
 
 		// Done, need to test
 		DbQueryStatus new_dbQueryStatus = profileDriver.unfollowFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
-		response.put("message", new_dbQueryStatus.getMessage());
+		response.put("msg", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
@@ -169,20 +181,18 @@ public class ProfileController {
 
 		// Done need to test
 		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		String url = "http://localhost:3001/updateSongFavouritesCount/";
-		String song_url =  url + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
+		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
 
 		try{
 			if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)){
-				try(Response new_response = this.client.newCall(new_Request).execute()){
-					String json_str = new_Request.body().toString();
+				Response new_response = client.newCall(new_Request).execute();
+				String json_str = new_Request.body().toString();
+				try{
 					JSONObject new_JSONOBJECT = new JSONObject(json_str);
-					boolean json_status = new_JSONOBJECT.get("status").toString().equals("OK");
-					if(json_status == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+					if(new_JSONOBJECT.get("status").toString().equals("OK") == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 					else if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND)) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_OK);
-				} catch(IOException e){
-					new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				} catch(JSONException e){
 					e.printStackTrace();
 				}
 			}
@@ -190,7 +200,7 @@ public class ProfileController {
 			new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			e.printStackTrace();
 		}
-		response.put("message", new_dbQueryStatus.getMessage());
+		response.put("msg", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
@@ -211,19 +221,18 @@ public class ProfileController {
 
 
 		DbQueryStatus new_dbQueryStatus = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		String url = "http://localhost:3001/updateSongFavouritesCount/";
-		String song_url = url + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
+		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
 
 		try{
 			if(new_dbQueryStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-				try(Response new_response = client.newCall(new_Request).execute()){
-					String json_str = new_Request.body().toString();
+				Response new_response = client.newCall(new_Request).execute();
+				String json_str = new_Request.body().toString();
+				try{
 					JSONObject new_JSONOBJECT = new JSONObject(json_str);
-					boolean json_status = new_JSONOBJECT.get("status").toString().equals("OK");
-					if(json_status == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
-				} catch(IOException e){
-					new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+					if(new_JSONOBJECT.get("status").toString().equals("OK") == false) new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+
+				} catch(JSONException e){
 					e.printStackTrace();
 				}
 			}
@@ -231,7 +240,7 @@ public class ProfileController {
 			new_dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			e.printStackTrace();
 		}
-		response.put("message", new_dbQueryStatus.getMessage());
+		response.put("msg", new_dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,new_dbQueryStatus.getdbQueryExecResult(),new_dbQueryStatus.getData());
 
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
