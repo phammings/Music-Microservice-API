@@ -60,6 +60,9 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	 */
 	@Override
 	public DbQueryStatus likeSong(String userName, String songId) {
+		if (userName == null || songId == null) {
+			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
 				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
@@ -90,6 +93,9 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	 */
 	@Override
 	public DbQueryStatus unlikeSong(String userName, String songId) {
+		if (userName == null || songId == null) {
+			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
 				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
