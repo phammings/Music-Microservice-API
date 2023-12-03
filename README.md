@@ -81,7 +81,9 @@ The application will have two important components which includes profile micros
   - _**Song Microservice:**_
     - Database must be called "eecs3311-test"
     - Collection must be called "songs"
+      - Running ```import-songs-db.sh``` will create the database and import ```MOCK_DATA.json```
     - Song Database must be connected to port 27017
+    
     
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
