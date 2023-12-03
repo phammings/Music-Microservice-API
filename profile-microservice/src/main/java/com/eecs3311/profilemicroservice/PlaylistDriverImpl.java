@@ -1,6 +1,7 @@
 package com.eecs3311.profilemicroservice;
 
 import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import org.neo4j.driver.v1.Transaction;
 
 // Imported libraries
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,41 +60,24 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	 */
 	@Override
 	public DbQueryStatus likeSong(String userName, String songId) {
-		StatementResult new_StatementResult;
-		String query;
-		if (userName == null || songId == null) return new DbQueryStatus("Error Liking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		try (Session new_session = driver.session()) {
-			Map<String, Object> new_HashMap = new HashMap<>();
-			new_HashMap.put("plName", userName + "-favourites");
-			new_HashMap.put("songId", songId);
-
-			try (Transaction new_transaction = new_session.beginTransaction()) {
-				// if user playlist does not exist
-				query = "MATCH (p:playlist {plName: $plName}) RETURN p";
-				new_StatementResult = new_transaction.run(query, new_HashMap);
-				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("Error Liking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
-
-				// if song node does not exists
-				query = "MATCH (s:song {songId: $songId}) RETURN s";
-				new_StatementResult = new_transaction.run(query, new_HashMap);
-				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("Error Liking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
-
-				// if relationship between the nodes does not exists
-				query = "MATCH r=(p:playlist {plName: $plName})-[:includes]->(s:song {songId: $songId}) RETURN r";
-				new_StatementResult = new_transaction.run(query, new_HashMap);
-				if (new_StatementResult.hasNext() == true) return new DbQueryStatus("Error Liking Song", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				query = "MATCH (p:playlist {plName: $plName}) \n  MATCH (s:song {songId: $songId}) \n CREATE (p)-[:includes]->(s)";
-				new_transaction.run(query, new_HashMap);
-				new_transaction.success();
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
+					trans.failure();
+					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				}
+				else {
+					if(trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (s:song {songId: \"%s\" }) \nMATCH (pl)-[r:includes]-(s) \nRETURN r", userName, songId)).list().isEmpty()) {
+						trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) \nMERGE (s:song {song: \"%s\" }) \nMERGE (pl)-[r:includes]->(s)\nRETURN r", userName, songId));
+						trans.success();
+						return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+					}
+					//	Song already liked
+					trans.success();
+					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+				}
 			}
-			new_session.close();
-			return new DbQueryStatus("Success Liking Song", DbQueryExecResult.QUERY_OK);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new DbQueryStatus("Error Liking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		//return null;
 	}
 
 	/**
