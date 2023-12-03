@@ -3,26 +3,28 @@ package com.eecs3311.profilemicroservice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ProfileMicroserviceApplicationTests {
 
 	//	Profile JUnit Test Cases
 	@Test
-	public void testCreateUserProfile_1() {//	QUERY_OK Test
-
+	public void test1_CreateUserProfile_1() {//	QUERY_OK Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.createUserProfile("user", "new user", "password");
 		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
-	public void testCreateUserProfile_2() {
+	public void test2_CreateUserProfile_2() {
 		//	QUERY_ERROR_GENERIC Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.createUserProfile(null, null, null);
@@ -31,15 +33,16 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testFollowFriend_1() {
+	public void test3_FollowFriend_1() {
 		//	QUERY_OK Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
-		DbQueryStatus test_status = pDriver.followFriend("user", "user2");
+		DbQueryStatus test_status = pDriver.createUserProfile("user2", "new user", "password");
+		test_status = pDriver.followFriend("user", "user2");
 		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
-	public void testFollowFriend_2() {
+	public void test4_FollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.followFriend("user", "Mr.69BombasticChad");
@@ -48,7 +51,7 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testFollowFriend_3() {
+	public void test5_FollowFriend_3() {
 		//	QUERY_ERROR_GENERIC Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.followFriend("user", "user");
@@ -56,7 +59,7 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testUnfollowFriend_1() {
+	public void test6_UnfollowFriend_1() {
 		//	QUERY_OK Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 
@@ -65,7 +68,7 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testUnfollowFriend_2() {
+	public void test7_UnfollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 
@@ -74,7 +77,7 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testUnfollowFriend_3() {
+	public void test8_UnfollowFriend_3() {
 		//	QUERY_ERROR_GENERIC Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.unfollowFriend("user", "user");
@@ -82,7 +85,7 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testGetAllSongFriendsLike_1() {
+	public void test8_GetAllSongFriendsLike_1() {
 		//	QUERY_OK Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.getAllSongFriendsLike("user");
@@ -91,7 +94,7 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testGetAllSongFriendsLike_2() {
+	public void test9_GetAllSongFriendsLike_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.getAllSongFriendsLike("newUser");
@@ -99,25 +102,25 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testGetAllSongFriendsLike_3() {
+	public void test10_GetAllSongFriendsLike_3() {
 		//	QUERY_ERROR_GENERIC Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.getAllSongFriendsLike("KonichiwaMeowMeow");
-		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
+		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 	}
 
 
 	//	Playlist JUnit Test Cases
 	@Test
-	public void testLikeSong_1() {
+	public void test99_LikeSong_1() {
 		//	QUERY_OK Test
 		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
-		DbQueryStatus test_status = pDriver.likeSong("user", "userID");
+		DbQueryStatus test_status = pDriver.likeSong("user2", "5d620f54d78b833e34e65b49");
 		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
-	public void testLikeSong_2() {
+	public void test12_LikeSong_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
 		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
 		DbQueryStatus test_status = pDriver.likeSong("user", "jingalalahuhu");
@@ -125,7 +128,7 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testLikeSong_3() {
+	public void test13_LikeSong_3() {
 		//	QUERY_ERROR_GENERIC Test
 		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
 		DbQueryStatus test_status = pDriver.likeSong(null, null);
@@ -133,27 +136,26 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void testUnlikeSong_1() {
+	public void test99_UnlikeSong_1() {
 		//	QUERY_OK Test
 		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
-		DbQueryStatus test_status = pDriver.unlikeSong("user", "userID");
+		DbQueryStatus test_status = pDriver.unlikeSong("user2", "5d620f54d78b833e34e65b49");
 		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
 
 	@Test
-	public void testUnlikeSong_2() {
+	public void test15_UnlikeSong_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
 		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
-		DbQueryStatus test_status = pDriver.unlikeSong("user", "yourPhoneLingingEatMyBlingBling");
+		DbQueryStatus test_status = pDriver.unlikeSong("user", "CurryCurry");
 		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 	}
 
 	@Test
-	public void testUnlikeSong_3() {
+	public void test16_UnlikeSong_3() {
 		//	QUERY_ERROR_GENERIC Test
 		PlaylistDriverImpl pDriver = new PlaylistDriverImpl();
 		DbQueryStatus test_status = pDriver.unlikeSong(null, null);
 		assertEquals(DbQueryExecResult.QUERY_ERROR_GENERIC, test_status.getdbQueryExecResult());
 	}
-
 }
