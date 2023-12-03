@@ -157,11 +157,6 @@ public class ProfileDriverImpl implements ProfileDriver {
 				}
 
 				List<Record> list = trans.run(String.format("MATCH (p:profile),(nProfile:profile) WHERE p.userName = \"%s\"\nAND (p)-[:follows]->(nProfile)\nRETURN nProfile", userName)).list();
-				if (list.isEmpty()) {
-					trans.failure();
-					return new DbQueryStatus("userName not following anyone", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				}
-
 				List<String> allUsersNamesFollowed = list.stream()
 						.map(record -> record.get(0).get("userName").toString())
 						.collect(Collectors.toList());
