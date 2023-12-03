@@ -177,10 +177,18 @@ public class ProfileDriverImpl implements ProfileDriver {
 				for (String name : allUsersNamesFollowed) {
 					name = name.substring(1, name.length()-1);
 					List<Record> songsResultRecords = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, name+"-favourites")).list();
-					List<String> songs = songsResultRecords.stream()
-							.map(song -> song.get(0).get("songId").toString().replace("\"", ""))
-							.collect(Collectors.toList());
-					totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
+					if (songsResultRecords.isEmpty()) {
+						List<String> songs = songsResultRecords.stream()
+								.map(song -> "")
+								.collect(Collectors.toList());
+						totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
+					}
+					else {
+						List<String> songs = songsResultRecords.stream()
+								.map(song -> song.get(0).get("songId").toString().replace("\"", ""))
+								.collect(Collectors.toList());
+						totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
+					}
 				}
 				trans.success();
 				DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
