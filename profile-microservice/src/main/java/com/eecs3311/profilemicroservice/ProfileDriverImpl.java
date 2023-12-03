@@ -70,6 +70,9 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
+		if (userName == null || fullName == null || password == null) {
+			return new DbQueryStatus("Error blank fields", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
 				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
@@ -94,6 +97,10 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
+		if (userName.equals(frndUserName)) {
+			return new DbQueryStatus("userName cannot follow userName", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
+
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
 				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
