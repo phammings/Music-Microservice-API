@@ -71,15 +71,9 @@ public class ProfileDriverImpl implements ProfileDriver {
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
-				String isExistQuery = "MATCH (p:profile {userName: \"" + userName + "\"}) RETURN p";
-				StatementResult existsResult = trans.run(isExistQuery);
-
-				if (existsResult.list().isEmpty()) {
+				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
 					String playlistName = userName + "-favourites";
-					trans.run(String.format("MERGE (a:profile {userName: \"%s\", fullName: \"%s\", password: \"%s\" })%n" +
-							"MERGE (b:playlist {plName: \"%s\" })%n" +
-							"CREATE (a)-[:created]->(b)%n" +
-							"RETURN a, b", userName, fullName, password, playlistName));
+					trans.run(String.format("MERGE (a:profile {userName: \"%s\", fullName: \"%s\", password: \"%s\" })\nMERGE (b:playlist {plName: \"%s\" })\nCREATE (a)-[:created]->(b)\nRETURN a, b", userName, fullName, password, playlistName));
 					trans.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
