@@ -165,7 +165,6 @@ public class ProfileDriverImpl implements ProfileDriver {
 					trans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
-
 				List<Record> list = trans.run(String.format("MATCH (p:profile),(nProfile:profile) WHERE p.userName = \"%s\"\nAND (p)-[:follows]->(nProfile)\nRETURN nProfile", userName)).list();
 				List<String> allUsersNamesFollowed = list.stream()
 						.map(record -> record.get(0).get("userName").toString())
@@ -173,7 +172,8 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 				Map<String, List<String>> totalSongsFriendsLike = new HashMap<String, List<String>>();
 				for (String name : allUsersNamesFollowed) {
-					List<Record> songsResultRecords = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, userName + "-favourites")).list();
+					name = name.substring(1, name.length()-1);
+					List<Record> songsResultRecords = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, name+"-favourites")).list();
 					List<String> songs = songsResultRecords.stream()
 							.map(song -> song.get(0).get("songId").toString().replace("\"", ""))
 							.collect(Collectors.toList());
