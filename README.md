@@ -98,14 +98,14 @@ The application will have two important components which includes profile micros
 
 
 [Java.java]: https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white
-[Java-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+[Java-url]: https://www.java.com/en/
 [Maven]: https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white
-[Maven-url]: https://tailwindcss.com/
+[Maven-url]: https://maven.apache.org/
 [SpringBoot]: https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white
-[Spring-url]: https://developer.mozilla.org/en-US/docs/Web/HTML
+[Spring-url]: https://spring.io/projects/spring-boot
 [MongoDB]: https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white
-[MongoDB-url]: https://developer.mozilla.org/en-US/docs/Web/HTML
+[MongoDB-url]: https://www.mongodb.com/
 [Neo4j]: https://img.shields.io/badge/Neo4j-008CC1?style=for-the-badge&logo=neo4j&logoColor=white
-[Neo4j-url]: https://developer.mozilla.org/en-US/docs/Web/HTML
+[Neo4j-url]: https://neo4j.com/
 [Postman]: https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white
-[Postman-url]: https://developer.mozilla.org/en-US/docs/Web/HTML
+[Postman-url]: https://www.postman.com/
