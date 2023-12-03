@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
@@ -148,40 +149,36 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
-		String query;
-		StatementResult user_StatementResult;
-		StatementResult song_StatementResult;
-		DbQueryStatus dbQueryStatus = new DbQueryStatus("Success Getting All Friend's Songs", DbQueryExecResult.QUERY_OK);
-		if (userName == null) new DbQueryStatus("Success Getting All Friend's Songs", DbQueryExecResult.QUERY_ERROR_GENERIC);
-
-		try (Session new_session = driver.session()) {
-			Map<String, Object> new_HashMap = new HashMap<>();
-			new_HashMap.put("userName", userName);
-
-			try (Transaction new_transaction = new_session.beginTransaction()) {
-				// list of frnduser the user follows
-				// searches up every song the user has liked
-				query = "MATCH (p1:profile {userName: $userName})-[:follows]->(p2:profile) RETURN collect(p2.userName) as userName";
-				user_StatementResult = new_transaction.run(query, new_HashMap);
-				Map<String, Object> song_HashMap = new HashMap<>();
-				query = "MATCH (c:playlist {plName: $userName + '-favourites'})-[:includes]->(s:song) RETURN collect(s.songName) as songs";
-				if (user_StatementResult.hasNext() == false) return new DbQueryStatus("Error Getting All Friend's Songs", DbQueryExecResult.QUERY_ERROR_GENERIC);
-				List<Object> user_followers = user_StatementResult.next().get("userName").asList();
-				for (Object f : user_followers) {
-					new_HashMap.put("userName", (String) f);
-					song_StatementResult = new_transaction.run(query, new_HashMap);
-					song_HashMap.put((String) f, (song_StatementResult.hasNext() == false) ? new ArrayList<String>() : song_StatementResult.next().get("songs").asList());
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					trans.failure();
+					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
-				dbQueryStatus.setData(song_HashMap);
-				new_transaction.success();
-			}
-			new_session.close();
-			return dbQueryStatus;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new DbQueryStatus(e.getMessage(), DbQueryExecResult.QUERY_ERROR_GENERIC);
+				List<Record> list = trans.run(String.format("MATCH (p:profile),(nProfile:profile) WHERE p.userName = \"%s\"\nAND (p)-[:follows]->(nProfile)\nRETURN nProfile", userName)).list();
+				if (list.isEmpty()) {
+					trans.failure();
+					return new DbQueryStatus("userName not following anyone", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				}
+
+				List<String> allUsersNamesFollowed = list.stream()
+						.map(record -> record.get(0).get("userName").toString())
+						.collect(Collectors.toList());
+
+				Map<String, List<String>> totalSongsFriendsLike = new HashMap<String, List<String>>();
+				for (String name : allUsersNamesFollowed) {
+					List<Record> songsResultRecords = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, userName + "-favourites")).list();
+					List<String> songs = songsResultRecords.stream()
+							.map(song -> song.get(0).get("songId").toString().replace("\"", ""))
+							.collect(Collectors.toList());
+					totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
+				}
+				trans.success();
+				DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+				status.setData(totalSongsFriendsLike);
+				return status;
+			}
 		}
-		//return null;
 	}
 }
