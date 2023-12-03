@@ -159,6 +159,9 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
+		if (userName == null) {
+			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
 				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
