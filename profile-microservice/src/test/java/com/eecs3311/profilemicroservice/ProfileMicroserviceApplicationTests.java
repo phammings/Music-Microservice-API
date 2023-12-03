@@ -102,11 +102,25 @@ public class ProfileMicroserviceApplicationTests {
 	}
 
 	@Test
-	public void test10_GetAllSongFriendsLike_3() {
+	public void test9_GetAllSongFriendsLike_3() {
 		//	QUERY_ERROR_GENERIC Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.getAllSongFriendsLike("KonichiwaMeowMeow");
 		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
+	}
+
+	@Test
+	public void test9_GetAllSongFriendsLike_4() {
+		//	QUERY_OK Test
+		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+
+		PlaylistDriverImpl playlistDriver = new PlaylistDriverImpl();
+		DbQueryStatus status = playlistDriver.likeSong("user2", "5d61728193528481fe5a3123");
+		DbQueryStatus test_status = pDriver.followFriend("user", "user2");
+		test_status = pDriver.getAllSongFriendsLike("user");
+		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
+		System.out.println(test_status.getData());
+		assertNotNull(test_status.getData());
 	}
 
 
