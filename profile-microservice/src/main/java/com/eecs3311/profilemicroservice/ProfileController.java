@@ -130,8 +130,10 @@ public class ProfileController {
 				String url = "http://localhost:3001/getSongTitleById/" + songId;
 				Request requestForm = new Request.Builder().url(url).build();
 				try (Response getReq = this.client.newCall(requestForm).execute()) {
-					songName.add(getReq.body().string());
-				} catch (IOException e) {
+					String reqBody = getReq.body().string();
+					JSONObject reqJson = new JSONObject(reqBody);
+					songName.add((String) reqJson.get("data"));
+				} catch (JSONException | IOException e) {
 					e.printStackTrace();
 				}
 			}
