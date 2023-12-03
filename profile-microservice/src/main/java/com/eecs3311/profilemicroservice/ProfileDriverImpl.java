@@ -69,23 +69,20 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				String isExistQuery = "MATCH (p:profile {userName: \"" + userName + "\"}) RETURN p";
-				StatementResult existsResult = trans.run(isExistQuery);
+		if(userName == null || fullName == null || password == null) return new DbQueryStatus("Error Creating Profile", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		try (Session new_session = driver.session()){
+			Map<String, Object> new_HashMap = new HashMap<>();
+			new_HashMap.put("userName", userName);
+			new_HashMap.put("fullName", fullName);
+			new_HashMap.put("password", password);
+			new_HashMap.put("plName", userName + "-favourites");
+			new_session.writeTransaction((Transaction new_transaction) -> new_transaction.run("CREATE (m:profile {userName: $userName, fullName: $fullName, password: $password})-[r:created]->(n:playlist {playlistName: playlistName})", new_HashMap));
+			new_session.close();
+			return new DbQueryStatus("Success Creating Profile", DbQueryExecResult.QUERY_OK);
 
-				if (existsResult.list().isEmpty()) {
-					String playlistName = userName + "-favourites";
-					trans.run(String.format("MERGE (a:profile {userName: \"%s\", fullName: \"%s\", password: \"%s\" })%n" +
-							"MERGE (b:playlist {plName: \"%s\" })%n" +
-							"CREATE (a)-[:created]->(b)%n" +
-							"RETURN a, b", userName, fullName, password, playlistName));
-					trans.success();
-					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-				}
-				trans.failure();
-				return new DbQueryStatus("Error creating duplicate userName", DbQueryExecResult.QUERY_ERROR_GENERIC);
-			}
+		} catch(Exception e){
+			System.out.println(e);
+			return new DbQueryStatus("Error Creating Profile", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
 
 	}
