@@ -128,8 +128,8 @@ public class ProfileController {
 			List<String> songName = new ArrayList<>();
 			for (String songId : totalSongsFriendsLike.get(name)) {
 				String url = "http://localhost:3001/getSongTitleById/" + songId;
-				Request req = new Request.Builder().url(url).build();
-				try (Response getReq = this.client.newCall(req).execute()) {
+				Request requestForm = new Request.Builder().url(url).build();
+				try (Response getReq = this.client.newCall(requestForm).execute()) {
 					songName.add(getReq.body().string());
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -180,6 +180,11 @@ public class ProfileController {
 		// TODO: add any other values to the map following the example in SongController.getSongById
 
 		// Done need to test
+		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
+		Request requestForm = new Request.Builder().url(url).build();
+		
+
+
 		DbQueryStatus status = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
 		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
