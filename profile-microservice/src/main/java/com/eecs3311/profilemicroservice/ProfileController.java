@@ -202,7 +202,7 @@ public class ProfileController {
 	 * @return ResponseEntity containing the operation status.
 	 */
 	@RequestMapping(value = "/unlikeSong", method = RequestMethod.PUT)
-	public ResponseEntity<Map<String, Object>> unlikeSong(@RequestBody Map<String, String> params, HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> unlikeSong(@RequestBody Map<String, String> params, HttpServletRequest request) throws IOException {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
@@ -210,38 +210,12 @@ public class ProfileController {
 
 		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request requestForm = new Request.Builder().url(url).build();
-
-		try (Response responseForm =  client.newCall(requestForm).execute()) {
-			JSONObject json = new JSONObject(responseForm.body().string());
-			boolean isOK = json.get("status").equals("OK");
-			if (!isOK) {
-				response.put("msg", "songName not found");
-				Object songData = null;
-				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		client.newCall(requestForm).execute();
 
 		DbQueryStatus status = playlistDriver.unlikeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
 		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
-
-		if(status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			try (Response new_response = client.newCall(new_Request).execute()) {
-				JSONObject json = new JSONObject(new_response.body().string());
-				boolean isOK = json.get("status").equals("OK");
-				if (!isOK) {
-					response.put("msg", "songName cannot be unliked");
-					Object songData = null;
-					return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_GENERIC, songData);
-				}
-			}
-			catch(Exception e){
-				e.printStackTrace();
-			}
-		}
+		client.newCall(new_Request).execute();
 
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
