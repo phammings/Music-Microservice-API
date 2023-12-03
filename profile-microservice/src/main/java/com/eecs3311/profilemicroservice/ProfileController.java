@@ -182,7 +182,19 @@ public class ProfileController {
 		// Done need to test
 		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request requestForm = new Request.Builder().url(url).build();
-		client.newCall(requestForm).execute();
+
+		try (Response responseForm =  client.newCall(requestForm).execute()) {
+			JSONObject json = new JSONObject(responseForm.body().string());
+			boolean isOK = json.get("status").equals("OK");
+			if (!isOK) {
+				response.put("msg", "songName not found");
+				Object songData = null;
+				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		DbQueryStatus status = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
 		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
@@ -210,7 +222,19 @@ public class ProfileController {
 
 		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request requestForm = new Request.Builder().url(url).build();
-		client.newCall(requestForm).execute();
+
+		try (Response responseForm =  client.newCall(requestForm).execute()) {
+			JSONObject json = new JSONObject(responseForm.body().string());
+			boolean isOK = json.get("status").equals("OK");
+			if (!isOK) {
+				response.put("msg", "songName not found");
+				Object songData = null;
+				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		DbQueryStatus status = playlistDriver.unlikeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
 		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
