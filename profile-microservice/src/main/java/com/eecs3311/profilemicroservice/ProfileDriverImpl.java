@@ -96,9 +96,11 @@ public class ProfileDriverImpl implements ProfileDriver {
 		try (Session session = driver.session()) {
 			try (Transaction trans = session.beginTransaction()) {
 				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					trans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", frndUserName)).list().isEmpty()) {
+					trans.failure();
 					return new DbQueryStatus("friendUserName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 
