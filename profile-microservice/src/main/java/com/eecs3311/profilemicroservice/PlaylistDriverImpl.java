@@ -71,7 +71,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 				}
 				else {
 					if(trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (s:song {songId: \"%s\" }) \nMATCH (pl)-[r:includes]-(s) \nRETURN r", userName, songId)).list().isEmpty()) {
-						trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) \nMERGE (s:song {song: \"%s\" }) \nMERGE (pl)-[r:includes]->(s)\nRETURN r", userName, songId));
+						trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) \nMERGE (s:song {songId: \"%s\" }) \nMERGE (pl)-[r:includes]->(s)\nRETURN r", userName, songId));
 						trans.success();
 						return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 					}
