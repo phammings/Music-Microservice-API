@@ -90,41 +90,21 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	 */
 	@Override
 	public DbQueryStatus unlikeSong(String userName, String songId) {
-		StatementResult new_StatementResult;
-		String query;
-
-		if (userName == null && songId == null) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		try (Session new_session = driver.session()) {
-			Map<String, Object> new_HashMap = new HashMap<>();
-			new_HashMap.put("plName", userName + "-favourites");
-			new_HashMap.put("songId", songId);
-
-			try (Transaction new_transaction = new_session.beginTransaction()) {
-				// if user playlist exist
-				query = "MATCH (p:playlist {plName: $plName}) RETURN p";
-				new_StatementResult = new_transaction.run(query, new_HashMap);
-				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
-
-				// if song node exist
-				query = "MATCH (s:song {songId: $songId}) RETURN s";
-				new_StatementResult = new_transaction.run(query, new_HashMap);
-				if (new_StatementResult.hasNext() == true) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
-
-				// if relationship between nodes exist
-				query = "MATCH (p:playlist {plName: $plName})-[r:includes]->(s:song {songId: $songId}) RETURN r";
-				new_StatementResult = new_transaction.run(query, new_HashMap);
-				if (new_StatementResult.hasNext() == false) return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
-				query = "MATCH (p:playlist {plName: $plName})-[r:includes]->(s:song {songId: $songId}) DELETE r";
-				new_transaction.run(query, new_HashMap);
-				new_transaction.success();
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
+					trans.failure();
+					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				} else {
+					if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\n" + "RETURN r", userName, songId)).list().isEmpty()) {
+						trans.failure();
+						return new DbQueryStatus("userName has not liked song", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+					}
+					trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\nDELETE r", userName, songId));
+					trans.success();
+					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+				}
 			}
-			new_session.close();
-			return new DbQueryStatus("Success Unliking Song", DbQueryExecResult.QUERY_OK);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new DbQueryStatus("Error Unliking Song", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		//return null;
 	}
 }
