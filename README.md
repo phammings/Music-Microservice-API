@@ -24,7 +24,8 @@ Spotify Music Player API clone interfacing through MongoDB and Neo4j, and implem
     </li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#instructions">Instructions</a></li>
-<li><a href="#demo">Video Demo</a></li>
+    <li><a href="#demo">Video Demo</a></li>
+    <li><a href="#api">API Documentation</a></li>
   </ol>
 </details>
 
@@ -93,6 +94,15 @@ The application will have two important components which includes profile micros
 
 [![](https://markdown-videos-api.jorgenkh.no/youtube/JfKhoIC_kjw)](https://youtu.be/JfKhoIC_kjw)
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- API -->
+## API Documentation
+
+<a href="https://documenter.getpostman.com/view/31547597/2s9YeK5WGW">Song Microservice API Documentation</a>
+
+<a href="https://documenter.getpostman.com/view/31547597/2s9YeK5WGV">Profile Microservice API Documentation</a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
