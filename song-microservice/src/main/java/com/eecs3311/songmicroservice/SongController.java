@@ -109,13 +109,17 @@ public class SongController {
 	 */
 	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.DELETE)
 	public ResponseEntity<Map<String, Object>> deleteSongById(@PathVariable("songId") String songId,
-			HttpServletRequest request) {
+			HttpServletRequest request) throws IOException {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("DELETE %s", Utils.getUrl(request)));
 
 		DbQueryStatus status = songDal.deleteSongById(songId);
-
+		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
+			String url = "http://localhost:3002/deleteSongById/" + songId;
+			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
+			client.newCall(requestForm).execute();
+		}
 		response.put("message", status.getMessage());
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}

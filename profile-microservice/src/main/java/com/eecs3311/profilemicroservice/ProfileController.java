@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
 
 /**
  * Controller class for handling profile-related HTTP requests in the profile microservice.
@@ -228,5 +229,22 @@ public class ProfileController {
 
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
+	}
+
+	/**
+	 * Helper method for deleting a song.
+	 *
+	 * @param songId songID in string
+	 * @param request The HTTP request object.
+	 * @return ResponseEntity containing the operation status.
+	 */
+	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.PUT)
+	public ResponseEntity<Map<String, Object>> deleteSongById(@PathVariable("songId") String songId, HttpServletRequest request) {
+
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
+
+		Data dataResult = null;
+		return Utils.setResponseStatus(response, playlistDriver.deleteSongById(songId).getdbQueryExecResult(), dataResult);
 	}
 }
