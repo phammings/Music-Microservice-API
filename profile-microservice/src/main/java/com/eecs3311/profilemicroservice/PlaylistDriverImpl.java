@@ -113,4 +113,28 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			}
 		}
 	}
+
+	/**
+	 * Deletes a song in the database.
+	 *
+	 * @param songId   The ID of the song to be deleted.
+	 * @return {@link DbQueryStatus} indicating the result of the operation.
+	 */
+	public DbQueryStatus deleteSongById(String songId) {
+		if (songId == null) {
+			return new DbQueryStatus("songId null", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (s:song {songId: \"%s\"}) RETURN s", songId)).list().isEmpty()) {
+					trans.failure();
+					return new DbQueryStatus("songId not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				} else {
+					trans.run(String.format("MATCH (s:song {songId: \"%s\"}) DETACH DELETE s", songId));
+					trans.success();
+					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+				}
+			}
+		}
+	}
 }

@@ -26,4 +26,12 @@ public interface PlaylistDriver {
 	 * @return {@link DbQueryStatus} object containing the status of the unlike operation.
 	 */
 	DbQueryStatus unlikeSong(String userName, String songId);
+
+	/**
+	 * Deletes a song from the database.
+	 *
+	 * @param songId The identifier of the song to be deleted.
+	 * @return {@link DbQueryStatus} object containing the status of the unlike operation.
+	 */
+	DbQueryStatus deleteSongById(String songId);
 }
