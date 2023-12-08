@@ -149,9 +149,9 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
-		DbQueryStatus status = profileDriver.unfollowFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
-		response.put("msg", status.getMessage());
-		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
+		DbQueryStatus new_status = profileDriver.unfollowFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
+		response.put("message", new_status.getMessage());
+		return Utils.setResponseStatus(response,new_status.getdbQueryExecResult(),new_status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
@@ -169,27 +169,27 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
-		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
-		Request requestForm = new Request.Builder().url(url).build();
-		try (Response responseForm =  client.newCall(requestForm).execute()) {
-			JSONObject json = new JSONObject(responseForm.body().string());
-			boolean isOK = json.get("status").equals("OK");
-			if (!isOK) {
-				response.put("msg", "songName not found");
-				Object songData = null;
-				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData);
+		String songNameURL_str = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
+		Request new_RequestForm = new Request.Builder().url(songNameURL_str).build();
+		try (Response new_ResponseForm =  client.newCall(new_RequestForm).execute()) {
+			JSONObject new_JSONObject = new JSONObject(new_ResponseForm.body().string());
+			boolean new_JSONObject_status = new_JSONObject.get("status").equals("OK");
+			if (!new_JSONObject_status) {
+				response.put("message", "songName not found");
+				Object songData_Object = null;
+				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData_Object);
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		DbQueryStatus status = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
-		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
-		client.newCall(new_Request).execute();
-		response.put("msg", status.getMessage());
-		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
+		DbQueryStatus new_status = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
+		String new_songURL_str = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
+		Request new_RequestForm = new Request.Builder().url(new_songURL_str).put(new FormBody.Builder().build()).build();
+		client.newCall(new_RequestForm).execute();
+		response.put("message", new_status.getMessage());
+		return Utils.setResponseStatus(response,new_status.getdbQueryExecResult(),new_status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
