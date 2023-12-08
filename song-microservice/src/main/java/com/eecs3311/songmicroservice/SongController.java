@@ -49,7 +49,7 @@ public class SongController {
 	 */
 	@RequestMapping(value = "/getSongById/{songId}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getSongById(@PathVariable("songId") String songId,
-			HttpServletRequest request) {
+														   HttpServletRequest request) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
@@ -69,7 +69,7 @@ public class SongController {
 	 */
 	@RequestMapping(value = "/getSongTitleById/{songId}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getSongTitleById(@PathVariable("songId") String songId,
-			HttpServletRequest request) {
+																HttpServletRequest request) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
@@ -89,7 +89,7 @@ public class SongController {
 	 */
 	@RequestMapping(value = "/getReleaseDateById/{songId}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> getReleaseDateById(@PathVariable("songId") String songId,
-																HttpServletRequest request) {
+																  HttpServletRequest request) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
@@ -109,30 +109,17 @@ public class SongController {
 	 */
 	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.DELETE)
 	public ResponseEntity<Map<String, Object>> deleteSongById(@PathVariable("songId") String songId,
-			HttpServletRequest request) {
+															  HttpServletRequest request) throws IOException {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("DELETE %s", Utils.getUrl(request)));
 
 		DbQueryStatus status = songDal.deleteSongById(songId);
-
 		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:3002/deleteAllSongsFromDb/";
-			url += songId;
+			String url = "http://localhost:3002/deleteSongById/" + songId;
 			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
-
-			try (Response responseForm = this.client.newCall(requestForm).execute()) {
-				JSONObject JSONrequest = new JSONObject(responseForm.body().string());
-				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
-				if (!isRequestSuccessful) {
-					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				}
-			} catch (IOException e) {
-				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
-				e.printStackTrace();
-			}
+			client.newCall(requestForm).execute();
 		}
-
 		response.put("message", status.getMessage());
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
@@ -146,7 +133,7 @@ public class SongController {
 	 */
 	@RequestMapping(value = "/addSong", method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addSong(@RequestBody Map<String, String> params,
-			HttpServletRequest request) {
+													   HttpServletRequest request) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
@@ -158,23 +145,6 @@ public class SongController {
 
 		Song song = new Song(artistName, songName, album, releaseDate);
 		DbQueryStatus status = songDal.addSong(song);
-
-		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:3002/deleteAllSongsFromDb/";
-			url += song.getId();
-			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
-
-			try (Response responseForm = this.client.newCall(requestForm).execute()) {
-				JSONObject JSONrequest = new JSONObject(responseForm.body().string());
-				boolean isRequestSuccessful = JSONrequest.get("status").equals("OK");
-				if (!isRequestSuccessful) {
-					status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				}
-			} catch (IOException e) {
-				status.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
-				e.printStackTrace();
-			}
-		}
 
 		response.put("message", status.getMessage());
 		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
