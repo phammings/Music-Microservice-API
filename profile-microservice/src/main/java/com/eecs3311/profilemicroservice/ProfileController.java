@@ -93,7 +93,7 @@ public class ProfileController {
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
 		DbQueryStatus status = profileDriver.followFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
-		response.put("msg", status.getMessage());
+		response.put("message", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
