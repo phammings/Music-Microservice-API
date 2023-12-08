@@ -74,10 +74,10 @@ public class SongController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
 
-		DbQueryStatus status = songDal.getSongTitleById(songId);
+		DbQueryStatus newStatus = songDal.getSongTitleById(songId);
 
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		response.put("message", newStatus.getMessage());
+		return Utils.setResponseStatus(response, newStatus.getdbQueryExecResult(), newStatus.getData());
 	}
 
 	/**
@@ -94,10 +94,10 @@ public class SongController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
 
-		DbQueryStatus status = songDal.getReleaseDateById(songId);
+		DbQueryStatus newStatus = songDal.getReleaseDateById(songId);
 
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		response.put("message", newStatus.getMessage());
+		return Utils.setResponseStatus(response, newStatus.getdbQueryExecResult(), newStatus.getData());
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class SongController {
 	 *
 	 * @param songId  The ID of the song.
 	 * @param request The HTTP servlet request.
-	 * @return ResponseEntity containing information about the deletion status.
+	 * @return ResponseEntity containing information about the deletion newStatus.
 	 */
 	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.DELETE)
 	public ResponseEntity<Map<String, Object>> deleteSongById(@PathVariable("songId") String songId,
@@ -114,14 +114,14 @@ public class SongController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("DELETE %s", Utils.getUrl(request)));
 
-		DbQueryStatus status = songDal.deleteSongById(songId);
-		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
+		DbQueryStatus newStatus = songDal.deleteSongById(songId);
+		if (newStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
 			String url = "http://localhost:3002/deleteSongById/" + songId;
-			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
-			client.newCall(requestForm).execute();
+			Request newRequestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
+			client.newCall(newRequestForm).execute();
 		}
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		response.put("message", newStatus.getMessage());
+		return Utils.setResponseStatus(response, newStatus.getdbQueryExecResult(), newStatus.getData());
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class SongController {
 	 *
 	 * @param params  The parameters for the new song.
 	 * @param request The HTTP servlet request.
-	 * @return ResponseEntity containing information about the addition status.
+	 * @return ResponseEntity containing information about the addition newStatus.
 	 */
 	@RequestMapping(value = "/addSong", method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addSong(@RequestBody Map<String, String> params,
@@ -144,10 +144,10 @@ public class SongController {
 		String releaseDate = params.get("songReleaseDate");
 
 		Song song = new Song(artistName, songName, album, releaseDate);
-		DbQueryStatus status = songDal.addSong(song);
+		DbQueryStatus newStatus = songDal.addSong(song);
 
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		response.put("message", newStatus.getMessage());
+		return Utils.setResponseStatus(response, newStatus.getdbQueryExecResult(), newStatus.getData());
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class SongController {
 	 *
 	 * @param params  The parameters for updating the favorite count.
 	 * @param request The HTTP servlet request.
-	 * @return ResponseEntity containing information about the update status.
+	 * @return ResponseEntity containing information about the update newStatus.
 	 */
 	@RequestMapping(value = "/updateSongFavouritesCount", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> updateFavouritesCount(@RequestBody Map<String, String> params, HttpServletRequest request) {
@@ -167,9 +167,9 @@ public class SongController {
 		String shouldDecrement = params.get("shouldDecrement");
 		boolean shouldDecrementBoolean = (shouldDecrement.equals("true"));
 
-		DbQueryStatus status = songDal.updateSongFavouritesCount(songId, shouldDecrementBoolean);
+		DbQueryStatus newStatus = songDal.updateSongFavouritesCount(songId, shouldDecrementBoolean);
 
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		response.put("message", newStatus.getMessage());
+		return Utils.setResponseStatus(response, newStatus.getdbQueryExecResult(), newStatus.getData());
 	}
 }

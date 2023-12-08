@@ -36,12 +36,12 @@ public class SongDalImpl implements SongDal {
 	public DbQueryStatus addSong(Song songToAdd) {
 		if (songToAdd.getSongAlbum() != null && songToAdd.getSongName() != null && songToAdd.getSongArtistFullName() != null ) {
 			db.insert(songToAdd);
-			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-			status.setData(songToAdd);
-			return status;
+			DbQueryStatus newStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			newStatus.setData(songToAdd);
+			return newStatus;
 		}
-		DbQueryStatus status = new DbQueryStatus("Song invalid", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		return status;
+		DbQueryStatus newStatus = new DbQueryStatus("Song invalid", DbQueryExecResult.QUERY_ERROR_GENERIC);
+		return newStatus;
 	}
 
 	/**
@@ -53,12 +53,12 @@ public class SongDalImpl implements SongDal {
 	@Override
 	public DbQueryStatus findSongById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
-			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-			status.setData(db.findById(songId, Song.class));
-			return status;
+			DbQueryStatus newStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			newStatus.setData(db.findById(songId, Song.class));
+			return newStatus;
 		}
-		DbQueryStatus status = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-		return status;
+		DbQueryStatus newStatus = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+		return newStatus;
 	}
 
 	/**
@@ -70,12 +70,12 @@ public class SongDalImpl implements SongDal {
 	@Override
 	public DbQueryStatus getSongTitleById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
-			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-			status.setData(db.findById(songId, Song.class).getSongName());
-			return status;
+			DbQueryStatus newStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			newStatus.setData(db.findById(songId, Song.class).getSongName());
+			return newStatus;
 		}
-		DbQueryStatus status = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-		return status;
+		DbQueryStatus newStatus = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+		return newStatus;
 	}
 
 	/**
@@ -87,12 +87,12 @@ public class SongDalImpl implements SongDal {
 	@Override
 	public DbQueryStatus getReleaseDateById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
-			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-			status.setData(db.findById(songId, Song.class).getSongReleaseDate());
-			return status;
+			DbQueryStatus newStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			newStatus.setData(db.findById(songId, Song.class).getSongReleaseDate());
+			return newStatus;
 		}
-		DbQueryStatus status = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-		return status;
+		DbQueryStatus newStatus = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+		return newStatus;
 	}
 
 	/**
@@ -104,12 +104,12 @@ public class SongDalImpl implements SongDal {
 	@Override
 	public DbQueryStatus deleteSongById(String songId) {
 		if (db.findById(songId, Song.class) != null) {
-			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			DbQueryStatus newStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 			db.remove(db.findById(songId, Song.class));
-			return status;
+			return newStatus;
 		}
-		DbQueryStatus status = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-		return status;
+		DbQueryStatus newStatus = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+		return newStatus;
 	}
 
 	/**
@@ -125,8 +125,8 @@ public class SongDalImpl implements SongDal {
 			Song song = db.findById(songId, Song.class);
 
 			if (shouldDecrement == true && song.getSongAmountFavourites() == 0) {
-				DbQueryStatus status = new DbQueryStatus("Song like count must be above 0", DbQueryExecResult.QUERY_ERROR_GENERIC);
-				return status;
+				DbQueryStatus newStatus = new DbQueryStatus("Song like count must be above 0", DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return newStatus;
 			}
 
 			if (shouldDecrement) {
@@ -136,12 +136,12 @@ public class SongDalImpl implements SongDal {
 				song.setSongAmountFavourites(song.getSongAmountFavourites() + 1);
 			}
 			this.db.findAndReplace(new Query(where("_id").is(songId)), song);
-			DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-			return status;
+			DbQueryStatus newStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+			return newStatus;
 		}
 		else {
-			DbQueryStatus status = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-			return status;
+			DbQueryStatus newStatus = new DbQueryStatus("Song not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+			return newStatus;
 		}
 	}
 }
