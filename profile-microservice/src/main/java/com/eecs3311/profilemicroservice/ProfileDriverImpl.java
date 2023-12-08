@@ -36,18 +36,18 @@ public class ProfileDriverImpl implements ProfileDriver {
 	public static void InitProfileDb() {
 		String queryStr;
 
-		try (Session session = ProfileMicroserviceApplication.driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
+		try (Session newSession = ProfileMicroserviceApplication.driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
 				queryStr = "CREATE CONSTRAINT ON (nProfile:profile) ASSERT exists(nProfile.userName)";
-				trans.run(queryStr);
+				newTrans.run(queryStr);
 
 				queryStr = "CREATE CONSTRAINT ON (nProfile:profile) ASSERT exists(nProfile.password)";
-				trans.run(queryStr);
+				newTrans.run(queryStr);
 
 				queryStr = "CREATE CONSTRAINT ON (nProfile:profile) ASSERT nProfile.userName IS UNIQUE";
-				trans.run(queryStr);
+				newTrans.run(queryStr);
 
-				trans.success();
+				newTrans.success();
 			} catch (Exception e) {
 				if (e.getMessage().contains("An equivalent constraint already exists")) {
 					System.out.println("INFO: Profile constraints already exist (DB likely already initialized), should be OK to continue");
@@ -56,7 +56,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 					throw e;
 				}
 			}
-			session.close();
+			newSession.close();
 		}
 	}
 
@@ -73,15 +73,15 @@ public class ProfileDriverImpl implements ProfileDriver {
 		if (userName == null || fullName == null || password == null) {
 			return new DbQueryStatus("Error blank fields", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+		try (Session newSession = driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
+				if (newTrans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
 					String playlistName = userName + "-favourites";
-					trans.run(String.format("MERGE (a:profile {userName: \"%s\", fullName: \"%s\", password: \"%s\" })\nMERGE (b:playlist {plName: \"%s\" })\nCREATE (a)-[:created]->(b)\nRETURN a, b", userName, fullName, password, playlistName));
-					trans.success();
+					newTrans.run(String.format("MERGE (a:profile {userName: \"%s\", fullName: \"%s\", password: \"%s\" })\nMERGE (b:playlist {plName: \"%s\" })\nCREATE (a)-[:created]->(b)\nRETURN a, b", userName, fullName, password, playlistName));
+					newTrans.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
-				trans.failure();
+				newTrans.failure();
 				return new DbQueryStatus("Error creating duplicate userName", DbQueryExecResult.QUERY_ERROR_GENERIC);
 			}
 		}
@@ -101,24 +101,24 @@ public class ProfileDriverImpl implements ProfileDriver {
 			return new DbQueryStatus("userName cannot follow userName", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
 
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
-					trans.failure();
+		try (Session newSession = driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
+				if (newTrans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					newTrans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
-				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", frndUserName)).list().isEmpty()) {
-					trans.failure();
+				if (newTrans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", frndUserName)).list().isEmpty()) {
+					newTrans.failure();
 					return new DbQueryStatus("friendUserName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 
-				if (trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nRETURN f", userName, frndUserName)).list().isEmpty()) {
-					trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nCREATE (a)-[:follows]->(b) \nRETURN a,b", userName, frndUserName));
-					trans.success();
+				if (newTrans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nRETURN f", userName, frndUserName)).list().isEmpty()) {
+					newTrans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nCREATE (a)-[:follows]->(b) \nRETURN a,b", userName, frndUserName));
+					newTrans.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 
 				}
-				trans.failure();
+				newTrans.failure();
 				return new DbQueryStatus("Error userName already follows friendUserName", DbQueryExecResult.QUERY_ERROR_GENERIC);
 
 			}
@@ -137,14 +137,14 @@ public class ProfileDriverImpl implements ProfileDriver {
 		if (userName.equals(frndUserName)) {
 			return new DbQueryStatus("Error userName cannot follow userName", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \n" + "RETURN f", userName, frndUserName)).list().isEmpty()) {
-					trans.failure();
+		try (Session newSession = driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
+				if (newTrans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \n" + "RETURN f", userName, frndUserName)).list().isEmpty()) {
+					newTrans.failure();
 					return new DbQueryStatus("Error userName not following friendUserName", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
-				trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nDELETE f", userName, frndUserName));
-				trans.success();
+				newTrans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nDELETE f", userName, frndUserName));
+				newTrans.success();
 				return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 
 			}
@@ -162,13 +162,13 @@ public class ProfileDriverImpl implements ProfileDriver {
 		if (userName == null) {
 			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
-					trans.failure();
+		try (Session newSession = driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
+				if (newTrans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					newTrans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
-				List<Record> list = trans.run(String.format("MATCH (p:profile),(nProfile:profile) WHERE p.userName = \"%s\"\nAND (p)-[:follows]->(nProfile)\nRETURN nProfile", userName)).list();
+				List<Record> list = newTrans.run(String.format("MATCH (p:profile),(nProfile:profile) WHERE p.userName = \"%s\"\nAND (p)-[:follows]->(nProfile)\nRETURN nProfile", userName)).list();
 				List<String> allUsersNamesFollowed = list.stream()
 						.map(record -> record.get(0).get("userName").toString())
 						.collect(Collectors.toList());
@@ -176,7 +176,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 				Map<String, List<String>> totalSongsFriendsLike = new HashMap<String, List<String>>();
 				for (String name : allUsersNamesFollowed) {
 					name = name.substring(1, name.length()-1);
-					List<Record> resultList = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, name+"-favourites")).list();
+					List<Record> resultList = newTrans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, name+"-favourites")).list();
 					if (resultList.isEmpty()) {
 						List<String> songs = resultList.stream()
 								.map(song -> "")
@@ -190,7 +190,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 						totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
 					}
 				}
-				trans.success();
+				newTrans.success();
 				DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				status.setData(totalSongsFriendsLike);
 				return status;

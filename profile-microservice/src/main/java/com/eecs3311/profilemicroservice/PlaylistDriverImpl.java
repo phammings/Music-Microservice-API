@@ -33,11 +33,11 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	public static void InitPlaylistDb() {
 		String queryStr;
 
-		try (Session session = ProfileMicroserviceApplication.driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
+		try (Session newSession = ProfileMicroserviceApplication.driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
 				queryStr = "CREATE CONSTRAINT ON (nPlaylist:playlist) ASSERT exists(nPlaylist.plName)";
-				trans.run(queryStr);
-				trans.success();
+				newTrans.run(queryStr);
+				newTrans.success();
 			} catch (Exception e) {
 				if (e.getMessage().contains("An equivalent constraint already exists")) {
 					System.out.println("INFO: Playlist constraint already exist (DB likely already initialized), should be OK to continue");
@@ -46,7 +46,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 					throw e;
 				}
 			}
-			session.close();
+			newSession.close();
 		}
 	}
 
@@ -63,20 +63,20 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 		if (userName == null || songId == null) {
 			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
-					trans.failure();
+		try (Session newSession = driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
+				if (newTrans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
+					newTrans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 				else {
-					if(trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (s:song {songId: \"%s\" }) \nMATCH (pl)-[r:includes]-(s) \nRETURN r", userName, songId)).list().isEmpty()) {
-						trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) \nMERGE (s:song {songId: \"%s\" }) \nMERGE (pl)-[r:includes]->(s)\nRETURN r", userName, songId));
-						trans.success();
+					if(newTrans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (s:song {songId: \"%s\" }) \nMATCH (pl)-[r:includes]-(s) \nRETURN r", userName, songId)).list().isEmpty()) {
+						newTrans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) \nMERGE (s:song {songId: \"%s\" }) \nMERGE (pl)-[r:includes]->(s)\nRETURN r", userName, songId));
+						newTrans.success();
 						return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 					}
 					//	Song already liked
-					trans.success();
+					newTrans.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
 			}
@@ -96,18 +96,18 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 		if (userName == null || songId == null) {
 			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
-					trans.failure();
+		try (Session newSession = driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
+				if (newTrans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
+					newTrans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				} else {
-					if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\n" + "RETURN r", userName, songId)).list().isEmpty()) {
-						trans.failure();
+					if (newTrans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\n" + "RETURN r", userName, songId)).list().isEmpty()) {
+						newTrans.failure();
 						return new DbQueryStatus("userName has not liked song", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 					}
-					trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\nDELETE r", userName, songId));
-					trans.success();
+					newTrans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\nDELETE r", userName, songId));
+					newTrans.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
 			}
@@ -124,14 +124,14 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 		if (songId == null) {
 			return new DbQueryStatus("songId null", DbQueryExecResult.QUERY_ERROR_GENERIC);
 		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (s:song {songId: \"%s\"}) RETURN s", songId)).list().isEmpty()) {
-					trans.failure();
+		try (Session newSession = driver.session()) {
+			try (Transaction newTrans = newSession.beginTransaction()) {
+				if (newTrans.run(String.format("MATCH (s:song {songId: \"%s\"}) RETURN s", songId)).list().isEmpty()) {
+					newTrans.failure();
 					return new DbQueryStatus("songId not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				} else {
-					trans.run(String.format("MATCH (s:song {songId: \"%s\"}) DETACH DELETE s", songId));
-					trans.success();
+					newTrans.run(String.format("MATCH (s:song {songId: \"%s\"}) DETACH DELETE s", songId));
+					newTrans.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
 			}
