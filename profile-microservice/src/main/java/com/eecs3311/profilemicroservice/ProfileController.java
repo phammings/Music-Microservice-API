@@ -72,11 +72,10 @@ public class ProfileController {
 
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
-		// Done for now, need to test
-		DbQueryStatus status = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
-		response.put("msg", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 
+		DbQueryStatus status = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
