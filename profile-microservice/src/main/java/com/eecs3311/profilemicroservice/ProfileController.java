@@ -112,12 +112,8 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
-
-		// Done, need to test
 		DbQueryStatus dbQueryStatus = profileDriver.getAllSongFriendsLike(userName);
-
 		Map<String, List<String>> totalSongsFriendsLike = (Map<String, List<String>>) dbQueryStatus.getData();
-
 		totalSongsFriendsLike.entrySet().forEach(entry -> {
 			String name = entry.getKey();
 			List<String> songName = new ArrayList<>();
@@ -125,15 +121,17 @@ public class ProfileController {
 				String url = "http://localhost:3001/getSongTitleById/" + songId;
 				Request requestForm = new Request.Builder().url(url).build();
 				try (Response getReq = this.client.newCall(requestForm).execute()) {
-					songName.add(getReq.body().string());
-				} catch (IOException e) {
+					String reqBody = getReq.body().string();
+					JSONObject reqJson = new JSONObject(reqBody);
+					songName.add((String) reqJson.get("data"));
+				} catch (JSONException | IOException e) {
 					e.printStackTrace();
 				}
 			}
 			entry.setValue(songName);
 		});
 
-		response.put("msg", dbQueryStatus.getMessage());
+		response.put("message", dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response,dbQueryStatus.getdbQueryExecResult(), totalSongsFriendsLike);
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
