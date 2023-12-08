@@ -52,6 +52,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 				if (e.getMessage().contains("An equivalent constraint already exists")) {
 					System.out.println("INFO: Profile constraints already exist (DB likely already initialized), should be OK to continue");
 				} else {
+					// devins comment idk wut this is??
 					// something else, yuck, bye
 					throw e;
 				}
