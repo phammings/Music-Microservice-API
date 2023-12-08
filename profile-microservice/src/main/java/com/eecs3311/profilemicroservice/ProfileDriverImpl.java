@@ -70,15 +70,15 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
-					String playlistName = userName + "-favourites";
-					trans.run(String.format("MERGE (a:profile {userName: \"%s\", fullName: \"%s\", password: \"%s\" })\nMERGE (b:playlist {plName: \"%s\" })\nCREATE (a)-[:created]->(b)\nRETURN a, b", userName, fullName, password, playlistName));
-					trans.success();
+		try (Session new_Session = driver.session()) {
+			try (Transaction new_Transaction = new_Session.beginTransaction()) {
+				if (new_Transaction.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					String new_playlistName = userName + "-favourites";
+					new_Transaction.run(String.format("MERGE (a:profile {userName: \"%s\", fullName: \"%s\", password: \"%s\" })\nMERGE (b:playlist {plName: \"%s\" })\nCREATE (a)-[:created]->(b)\nRETURN a, b", userName, fullName, password, new_playlistName));
+					new_Transaction.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
-				trans.failure();
+				new_Transaction.failure();
 				return new DbQueryStatus("Error creating duplicate userName", DbQueryExecResult.QUERY_ERROR_GENERIC);
 			}
 		}
