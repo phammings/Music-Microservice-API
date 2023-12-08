@@ -55,9 +55,9 @@ public class SongController {
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
 
 		DbQueryStatus dbQueryStatus = songDal.findSongById(songId);
-
 		response.put("message", dbQueryStatus.getMessage());
 		return Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -74,10 +74,10 @@ public class SongController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
 
-		DbQueryStatus status = songDal.getSongTitleById(songId);
-
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		DbQueryStatus new_status = songDal.getSongTitleById(songId);
+		response.put("message", new_status.getMessage());
+		return Utils.setResponseStatus(response, new_status.getdbQueryExecResult(), new_status.getData());
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -94,10 +94,10 @@ public class SongController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("GET %s", Utils.getUrl(request)));
 
-		DbQueryStatus status = songDal.getReleaseDateById(songId);
-
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		DbQueryStatus new_status = songDal.getReleaseDateById(songId);
+		response.put("message", new_status.getMessage());
+		return Utils.setResponseStatus(response, new_status.getdbQueryExecResult(), new_status.getData());
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -114,14 +114,15 @@ public class SongController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("DELETE %s", Utils.getUrl(request)));
 
-		DbQueryStatus status = songDal.deleteSongById(songId);
-		if (status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:3002/deleteSongById/" + songId;
-			Request requestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
-			client.newCall(requestForm).execute();
+		DbQueryStatus new_status = songDal.deleteSongById(songId);
+		if (new_status.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
+			String songURL_str = "http://localhost:3002/deleteSongById/" + songId;
+			Request new_requestForm = new Request.Builder().url(songURL_str).put(new FormBody.Builder().build()).build();
+			client.newCall(new_requestForm).execute();
 		}
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		response.put("message", new_status.getMessage());
+		return Utils.setResponseStatus(response, new_status.getdbQueryExecResult(), new_status.getData());
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
 	/**
@@ -143,11 +144,12 @@ public class SongController {
 		String album = params.get("songAlbum");
 		String releaseDate = params.get("songReleaseDate");
 
-		Song song = new Song(artistName, songName, album, releaseDate);
-		DbQueryStatus status = songDal.addSong(song);
+		Song new_song = new Song(artistName, songName, album, releaseDate);
+		DbQueryStatus new_status = songDal.addSong(new_song);
+		response.put("message", new_status.getMessage());
+		return Utils.setResponseStatus(response, new_status.getdbQueryExecResult(), new_status.getData());
+		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 	}
 
 	/**
@@ -166,10 +168,8 @@ public class SongController {
 		String songId = params.get("songId");
 		String shouldDecrement = params.get("shouldDecrement");
 		boolean shouldDecrementBoolean = (shouldDecrement.equals("true"));
-
-		DbQueryStatus status = songDal.updateSongFavouritesCount(songId, shouldDecrementBoolean);
-
-		response.put("message", status.getMessage());
-		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
+		DbQueryStatus new_status = songDal.updateSongFavouritesCount(songId, shouldDecrementBoolean);
+		response.put("message", new_status.getMessage());
+		return Utils.setResponseStatus(response, new_status.getdbQueryExecResult(), new_status.getData());
 	}
 }
