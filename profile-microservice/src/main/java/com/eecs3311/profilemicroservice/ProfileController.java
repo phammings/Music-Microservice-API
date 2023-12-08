@@ -119,9 +119,9 @@ public class ProfileController {
 			String name = entry.getKey();
 			List<String> songName = new ArrayList<>();
 			for (String songId : totalSongsFriendsLike.get(name)) {
-				String url = "http://localhost:3001/getSongTitleById/" + songId;
-				Request requestForm = new Request.Builder().url(url).build();
-				try (Response getReq = this.client.newCall(requestForm).execute()) {
+				String songURLstr = "http://localhost:3001/getSongTitleById/" + songId;
+				Request newRequestForm = new Request.Builder().url(songURLstr).build();
+				try (Response getReq = this.client.newCall(newRequestForm).execute()) {
 					String reqBody = getReq.body().string();
 					JSONObject reqJson = new JSONObject(reqBody);
 					songName.add((String) reqJson.get("data"));
@@ -168,13 +168,13 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 
-		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
-		Request requestForm = new Request.Builder().url(url).build();
+		String songURLstr = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
+		Request newRequestForm = new Request.Builder().url(songURLstr).build();
 
-		try (Response responseForm =  client.newCall(requestForm).execute()) {
-			JSONObject json = new JSONObject(responseForm.body().string());
-			boolean isOK = json.get("status").equals("OK");
-			if (!isOK) {
+		try (Response newResponseForm =  client.newCall(newRequestForm).execute()) {
+			JSONObject json = new JSONObject(newResponseForm.body().string());
+			boolean JSONObjectStatus = json.get("status").equals("OK");
+			if (!JSONObjectStatus) {
 				response.put("msg", "songName not found");
 				Object songData = null;
 				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData);
@@ -185,8 +185,8 @@ public class ProfileController {
 		}
 
 		DbQueryStatus status = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
-		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
+		songURLstr = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
+		Request new_Request = new Request.Builder().url(songURLstr).put(new FormBody.Builder().build()).build();
 		client.newCall(new_Request).execute();
 
 		response.put("msg", status.getMessage());
@@ -206,13 +206,13 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 
-		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
-		Request requestForm = new Request.Builder().url(url).build();
+		String songURLstr = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
+		Request newRequestForm = new Request.Builder().url(songURLstr).build();
 
-		try (Response responseForm =  client.newCall(requestForm).execute()) {
-			JSONObject json = new JSONObject(responseForm.body().string());
-			boolean isOK = json.get("status").equals("OK");
-			if (!isOK) {
+		try (Response newResponseForm =  client.newCall(newRequestForm).execute()) {
+			JSONObject json = new JSONObject(newResponseForm.body().string());
+			boolean JSONObjectStatus = json.get("status").equals("OK");
+			if (!JSONObjectStatus) {
 				response.put("msg", "songName not found");
 				Object songData = null;
 				return Utils.setResponseStatus(response, DbQueryExecResult.QUERY_ERROR_NOT_FOUND, songData);
@@ -223,8 +223,8 @@ public class ProfileController {
 		}
 
 		DbQueryStatus status = playlistDriver.unlikeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
-		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
+		songURLstr = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
+		Request new_Request = new Request.Builder().url(songURLstr).put(new FormBody.Builder().build()).build();
 		client.newCall(new_Request).execute();
 
 		response.put("msg", status.getMessage());
