@@ -6,9 +6,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -175,7 +179,10 @@ public class SongMicroserviceApplicationTests {
 
 		test.addSong(song);
 		DbQueryStatus status = test.updateSongFavouritesCount(song.getId(), false);
+		List<Song> songList = db.find(new Query(where("_id").is(objectId.toHexString())), Song.class);
+		Song retrievedSong = songList.get(0);
 
+		assertEquals(retrievedSong.getSongAmountFavourites(), 1);
 		assertEquals(status.getdbQueryExecResult(), DbQueryExecResult.QUERY_OK);
 	}
 
