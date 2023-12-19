@@ -14,8 +14,8 @@ public class ProfileMicroserviceApplicationTests {
 
 	//	Profile JUnit Test Cases
 	@Test
-	public void testCreateUserProfile_1() {
-		//	QUERY_OK Test
+	public void testCreateUserProfile_1() {//	QUERY_OK Test
+
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
 		DbQueryStatus test_status = pDriver.createUserProfile("user", "new user", "password");
 		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
@@ -59,6 +59,7 @@ public class ProfileMicroserviceApplicationTests {
 	public void testUnfollowFriend_1() {
 		//	QUERY_OK Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+
 		DbQueryStatus test_status = pDriver.unfollowFriend("user", "user2");
 		assertEquals(DbQueryExecResult.QUERY_OK, test_status.getdbQueryExecResult());
 	}
@@ -67,6 +68,7 @@ public class ProfileMicroserviceApplicationTests {
 	public void testUnfollowFriend_2() {
 		//	QUERY_ERROR_NOT_FOUND Test
 		ProfileDriverImpl pDriver = new ProfileDriverImpl();
+
 		DbQueryStatus test_status = pDriver.unfollowFriend("user", "MasterOogway");
 		assertEquals(DbQueryExecResult.QUERY_ERROR_NOT_FOUND, test_status.getdbQueryExecResult());
 	}
