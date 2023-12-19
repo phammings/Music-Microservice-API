@@ -42,6 +42,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 				if (e.getMessage().contains("An equivalent constraint already exists")) {
 					System.out.println("INFO: Playlist constraint already exist (DB likely already initialized), should be OK to continue");
 				} else {
+					// devins comment idk wut this is??
 					// something else, yuck, bye
 					throw e;
 				}
@@ -60,23 +61,19 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	 */
 	@Override
 	public DbQueryStatus likeSong(String userName, String songId) {
-		if (userName == null || songId == null) {
-			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
-					trans.failure();
+		try (Session new_Session = driver.session()) {
+			try (Transaction new_Transaction = new_Session.beginTransaction()) {
+				if (new_Transaction.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
+					new_Transaction.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 				else {
-					if(trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (s:song {songId: \"%s\" }) \nMATCH (pl)-[r:includes]-(s) \nRETURN r", userName, songId)).list().isEmpty()) {
-						trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) \nMERGE (s:song {songId: \"%s\" }) \nMERGE (pl)-[r:includes]->(s)\nRETURN r", userName, songId));
-						trans.success();
+					if(new_Transaction.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (s:song {songId: \"%s\" }) \nMATCH (pl)-[r:includes]-(s) \nRETURN r", userName, songId)).list().isEmpty()) {
+						new_Transaction.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) \nMERGE (s:song {song: \"%s\" }) \nMERGE (pl)-[r:includes]->(s)\nRETURN r", userName, songId));
+						new_Transaction.success();
 						return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 					}
-					//	Song already liked
-					trans.success();
+					new_Transaction.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
 			}
@@ -93,45 +90,19 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	 */
 	@Override
 	public DbQueryStatus unlikeSong(String userName, String songId) {
-		if (userName == null || songId == null) {
-			return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
-					trans.failure();
+		try (Session new_Session = driver.session()) {
+			try (Transaction new_Transaction = new_Session.beginTransaction()) {
+				if (new_Transaction.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }) RETURN pl", userName)).list().isEmpty()) {
+					new_Transaction.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				} else {
-					if (trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\n" + "RETURN r", userName, songId)).list().isEmpty()) {
-						trans.failure();
+				}
+				else {
+					if (new_Transaction.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\n" + "RETURN r", userName, songId)).list().isEmpty()) {
+						new_Transaction.failure();
 						return new DbQueryStatus("userName has not liked song", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 					}
-					trans.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\nDELETE r", userName, songId));
-					trans.success();
-					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Deletes a song in the database.
-	 *
-	 * @param songId   The ID of the song to be deleted.
-	 * @return {@link DbQueryStatus} indicating the result of the operation.
-	 */
-	public DbQueryStatus deleteSongById(String songId) {
-		if (songId == null) {
-			return new DbQueryStatus("songId null", DbQueryExecResult.QUERY_ERROR_GENERIC);
-		}
-		try (Session session = driver.session()) {
-			try (Transaction trans = session.beginTransaction()) {
-				if (trans.run(String.format("MATCH (s:song {songId: \"%s\"}) RETURN s", songId)).list().isEmpty()) {
-					trans.failure();
-					return new DbQueryStatus("songId not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				} else {
-					trans.run(String.format("MATCH (s:song {songId: \"%s\"}) DETACH DELETE s", songId));
-					trans.success();
+					new_Transaction.run(String.format("MATCH (pl:playlist {plName: \"%s-favourites\" }), (pl)-[r:includes]->(:song {songId: \"%s\" })\nDELETE r", userName, songId));
+					new_Transaction.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 				}
 			}
