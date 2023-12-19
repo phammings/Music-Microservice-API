@@ -73,9 +73,9 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
 
-		DbQueryStatus new_status = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
-		response.put("message", new_status.getMessage());
-		return Utils.setResponseStatus(response, new_status.getdbQueryExecResult(), new_status.getData());
+		DbQueryStatus status = profileDriver.createUserProfile(params.get(KEY_USER_NAME), params.get(KEY_USER_FULLNAME), params.get(KEY_USER_PASSWORD));
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response, status.getdbQueryExecResult(), status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
@@ -92,9 +92,9 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
-		DbQueryStatus new_status = profileDriver.followFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
-		response.put("message", new_status.getMessage());
-		return Utils.setResponseStatus(response,new_status.getdbQueryExecResult(),new_status.getData());
+		DbQueryStatus status = profileDriver.followFriend(params.get(KEY_USER_NAME), params.get(KEY_FRIEND_USER_NAME));
+		response.put("message", status.getMessage());
+		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
@@ -112,27 +112,27 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
-		DbQueryStatus new_status = profileDriver.getAllSongFriendsLike(userName);
-		Map<String, List<String>> total_frndSongs = (Map<String, List<String>>) new_status.getData();
-		total_frndSongs.entrySet().forEach(entry -> {
-			String songName = entry.getKey();
-			List<String> songName_List = new ArrayList<>();
-			for (String songName_ID : total_frndSongs.get(songName)) {
-				String songNameID_url_str = "http://localhost:3001/getSongTitleById/" + songName_ID;
-				Request new_requestForm = new Request.Builder().url(songNameID_url_str).build();
-				try (Response get_newRequestForm = this.client.newCall(new_requestForm).execute()) {
-					String requestBody_str = get_newRequestForm.body().string();
-					JSONObject new_requestJSONObject = new JSONObject(requestBody_str);
-					songName_List.add((String) new_requestJSONObject.get("data"));
+		DbQueryStatus dbQueryStatus = profileDriver.getAllSongFriendsLike(userName);
+		Map<String, List<String>> totalSongsFriendsLike = (Map<String, List<String>>) dbQueryStatus.getData();
+		totalSongsFriendsLike.entrySet().forEach(entry -> {
+			String name = entry.getKey();
+			List<String> songName = new ArrayList<>();
+			for (String songId : totalSongsFriendsLike.get(name)) {
+				String url = "http://localhost:3001/getSongTitleById/" + songId;
+				Request requestForm = new Request.Builder().url(url).build();
+				try (Response getReq = this.client.newCall(requestForm).execute()) {
+					String reqBody = getReq.body().string();
+					JSONObject reqJson = new JSONObject(reqBody);
+					songName.add((String) reqJson.get("data"));
 				} catch (JSONException | IOException e) {
 					e.printStackTrace();
 				}
 			}
-			entry.setValue(songName_List);
+			entry.setValue(songName);
 		});
 
-		response.put("message", new_status.getMessage());
-		return Utils.setResponseStatus(response,new_status.getdbQueryExecResult(), total_frndSongs);
+		response.put("message", dbQueryStatus.getMessage());
+		return Utils.setResponseStatus(response,dbQueryStatus.getdbQueryExecResult(), totalSongsFriendsLike);
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
 	}
 
