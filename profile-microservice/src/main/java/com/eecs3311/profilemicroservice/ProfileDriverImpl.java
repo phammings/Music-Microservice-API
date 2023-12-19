@@ -94,24 +94,24 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
-		try (Session new_Session = driver.session()) {
-			try (Transaction new_Transaction = new_Session.beginTransaction()) {
-				if (new_Transaction.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
-					new_Transaction.failure();
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					trans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
-				if (new_Transaction.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", frndUserName)).list().isEmpty()) {
-					new_Transaction.failure();
+				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", frndUserName)).list().isEmpty()) {
+					trans.failure();
 					return new DbQueryStatus("friendUserName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 
-				if (new_Transaction.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nRETURN f", userName, frndUserName)).list().isEmpty()) {
-					new_Transaction.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nCREATE (a)-[:follows]->(b) \nRETURN a,b", userName, frndUserName));
-					new_Transaction.success();
+				if (trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nRETURN f", userName, frndUserName)).list().isEmpty()) {
+					trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nCREATE (a)-[:follows]->(b) \nRETURN a,b", userName, frndUserName));
+					trans.success();
 					return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 
 				}
-				new_Transaction.failure();
+				trans.failure();
 				return new DbQueryStatus("Error userName already follows friendUserName", DbQueryExecResult.QUERY_ERROR_GENERIC);
 
 			}
@@ -127,14 +127,14 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus unfollowFriend(String userName, String frndUserName) {
-		try (Session new_Session = driver.session()) {
-			try (Transaction new_Transaction = new_Session.beginTransaction()) {
-				if (new_Transaction.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \n" + "RETURN f", userName, frndUserName)).list().isEmpty()) {
-					new_Transaction.failure();
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \n" + "RETURN f", userName, frndUserName)).list().isEmpty()) {
+					trans.failure();
 					return new DbQueryStatus("Error userName not following friendUserName", DbQueryExecResult.QUERY_ERROR_GENERIC);
 				}
-				new_Transaction.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nDELETE f", userName, frndUserName));
-				new_Transaction.success();
+				trans.run(String.format("MATCH (a:profile), (b:profile) WHERE a.userName = \"%s\" AND b.userName = \"%s\" \nMATCH (a)-[f:follows]->(b) \nDELETE f", userName, frndUserName));
+				trans.success();
 				return new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
 
 			}
@@ -149,30 +149,30 @@ public class ProfileDriverImpl implements ProfileDriver {
 	 */
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
-		try (Session new_Session = driver.session()) {
-			try (Transaction new_Transaction = new_Session.beginTransaction()) {
-				if (new_Transaction.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
-					new_Transaction.failure();
+		try (Session session = driver.session()) {
+			try (Transaction trans = session.beginTransaction()) {
+				if (trans.run(String.format("MATCH (p:profile {userName: \"%s\"}) RETURN p", userName)).list().isEmpty()) {
+					trans.failure();
 					return new DbQueryStatus("userName not found", DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				}
 
-				List<Record> newTransaction_List = new_Transaction.run(String.format("MATCH (p:profile),(nProfile:profile) WHERE p.userName = \"%s\"\nAND (p)-[:follows]->(nProfile)\nRETURN nProfile", userName)).list();
-				List<String> totalUsersFollowed_List = newTransaction_List.stream()
+				List<Record> list = trans.run(String.format("MATCH (p:profile),(nProfile:profile) WHERE p.userName = \"%s\"\nAND (p)-[:follows]->(nProfile)\nRETURN nProfile", userName)).list();
+				List<String> allUsersNamesFollowed = list.stream()
 						.map(record -> record.get(0).get("userName").toString())
 						.collect(Collectors.toList());
 
-				Map<String, List<String>> totalFrndSongs_List = new HashMap<String, List<String>>();
-				for (String userFollowedName_str : totalUsersFollowed_List) {
-					List<Record> resultingSongRecords_List = new_Transaction.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, userName + "-favourites")).list();
-					List<String> songNames_List = resultingSongRecords_List.stream()
+				Map<String, List<String>> totalSongsFriendsLike = new HashMap<String, List<String>>();
+				for (String name : allUsersNamesFollowed) {
+					List<Record> songsResultRecords = trans.run(String.format("MATCH (p:profile {userName: \"%s\" }), (pl:playlist {plName: \"%s\" })\nMATCH (pl)-[:includes]-(s:song)\nRETURN s", userName, userName + "-favourites")).list();
+					List<String> songs = songsResultRecords.stream()
 							.map(song -> song.get(0).get("songId").toString().replace("\"", ""))
 							.collect(Collectors.toList());
-					totalFrndSongs_List.put(userFollowedName_str.replaceAll("\"", ""), songNames_List);
+					totalSongsFriendsLike.put(name.replaceAll("\"", ""), songs);
 				}
-				new_Transaction.success();
-				DbQueryStatus new_status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
-				new_status.setData(totalFrndSongs_List);
-				return new_status;
+				trans.success();
+				DbQueryStatus status = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+				status.setData(totalSongsFriendsLike);
+				return status;
 			}
 		}
 	}
