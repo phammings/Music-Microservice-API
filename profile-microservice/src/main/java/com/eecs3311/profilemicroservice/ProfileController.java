@@ -169,6 +169,8 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		// TODO: add any other values to the map following the example in SongController.getSongById
+
+		// Done need to test
 		String url = "http://localhost:3001/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request requestForm = new Request.Builder().url(url).build();
 		try (Response responseForm =  client.newCall(requestForm).execute()) {
@@ -188,6 +190,7 @@ public class ProfileController {
 		String song_url = "http://localhost:3001/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
 		Request new_Request = new Request.Builder().url(song_url).put(new FormBody.Builder().build()).build();
 		client.newCall(new_Request).execute();
+
 		response.put("msg", status.getMessage());
 		return Utils.setResponseStatus(response,status.getdbQueryExecResult(),status.getData());
 		//return ResponseEntity.status(HttpStatus.OK).body(response); // TODO: replace with return statement similar to in getSongById
