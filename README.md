@@ -54,6 +54,8 @@ The application will have two important components which includes profile micros
 ### Tested With
 
 * [![Postman][Postman]][Postman-url]
+* [![Robot][Robot]][Robot-url]
+* [![JUnit5][JUnit5]][JUnit5-url]
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -66,6 +68,8 @@ The application will have two important components which includes profile micros
 - ✔️ Practice Software Architecture, in particular Server/Client model
 - ✔️ Learn how to extend functionality of a software project by adding new features.
 - ✔️ Practice using a build automation tool such as Maven
+- ✔️ Testing HTTP responses with Postman
+- ✔️ Built automated test cases with the Robot Framework and JUnit5
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -119,3 +123,7 @@ The application will have two important components which includes profile micros
 [Neo4j-url]: https://neo4j.com/
 [Postman]: https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white
 [Postman-url]: https://www.postman.com/
+[Robot]: https://img.shields.io/badge/Robot%20Framework-000000?style=for-the-badge&logo=robot%20framework&logoColor=white
+[Robot-url]: https://robotframework.org/
+[JUnit5]: https://img.shields.io/badge/Junit5-25A162?style=for-the-badge&logo=junit5&logoColor=white
+[JUnit5-url]: https://junit.org/junit5/
