@@ -14,8 +14,8 @@ services:
     networks:
       - net
 
-  app:
-    container_name: app
+  app-neo4j:
+    container_name: app-neo4j
     image: springboot-neo4j:1.0
     build:
       context: .
