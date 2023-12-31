@@ -5,9 +5,12 @@ services:
     container_name: "mymongodb"
     ports:
       - 27017:27017
-  springboot-mongodb:
+  app:
     image: springboot-mongodb:1.0
-    container_name: springboot-mongodb
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - 3001:3001
     links:
