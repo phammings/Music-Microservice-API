@@ -25,7 +25,7 @@ Spotify Music Player API clone interfacing through MongoDB and Neo4j, and implem
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#instructions">Instructions</a></li>
     <li><a href="#demo">Video Demo</a></li>
-    <li><a href="#api">API Documentation</a></li>
+    <li><a href="#api">API Documentation and Use</a></li>
   </ol>
 </details>
 
@@ -34,9 +34,9 @@ Spotify Music Player API clone interfacing through MongoDB and Neo4j, and implem
 ## About The Project
 
 
-The project focuses on a backend Java API with two microservices, interfacing with MongoDB and Neo4j databases. Emphasising real-world scenarios, the project aims to explore NoSQL and Graph databases, implement background logic for REST API endpoints, and extend functionality through new features of a Spotify music webservice clone. Adhering to specific requirements for the Song microservice application such as adding songs to a playlist, liking songs, creating profiles, etc. Also git usage, code style conventions, and testing with tools like Curl or Postman are essential components will be implemented. 
+The project focuses on a backend Java API with two microservices, interfacing with MongoDB and Neo4j databases. Emphasising real-world scenarios, the project aims to explore NoSQL and Graph databases, implement background logic for REST API endpoints, and extend functionality through new features of a Spotify music webservice clone. Created features for the Song and Profile microservice application such as adding songs to a playlist, liking songs, creating profiles, etc. and using okhttp3 to communicate between the two microservices. Git usage, code style conventions, and testing with tools like Curl or Postman were also essential components implemented. 
 
-The application will have two important components which includes profile microservice and song microservice that will be implemented using all the different tools, frameworks, and design principles we discussed. The application will emphasize on database and node based relationships between different components, in an attempt to recreate industry practices and how business create large scale products.
+The application will emphasize on database and node based relationships between different components, in an attempt to recreate industry practices and how business create large scale products.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -50,6 +50,7 @@ The application will have two important components which includes profile micros
 * [![Maven][Maven]][Maven-url]
 * [![MongoDB][MongoDB]][MongoDB-url]
 * [![Neo4j][Neo4j]][Neo4j-url]
+* [![Docker][Docker]][Docker-url]
 
 ### Tested With
 
@@ -70,6 +71,7 @@ The application will have two important components which includes profile micros
 - ✔️ Practice using a build automation tool such as Maven
 - ✔️ Testing HTTP responses with Postman
 - ✔️ Built automated test cases with the Robot Framework and JUnit5
+- ✔️ Utilize Docker for containerized deployment and easy setup across different environments
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -78,16 +80,17 @@ The application will have two important components which includes profile micros
 <!-- INSTRUCTIONS -->
 ## Instructions
 
-- Run both ProfileMicroserviceApplication.java (runs on port 3002) and SongMicroserviceApplication (runs on port 3001):
+- Ensure Docker in installed on your system.
   - _**Profile Microservice:**_
-    - Database username must be "neo4j"
-    - Database password must be "12345678"
-    - Profile Data must be connected to port 7687
+    - Navigate to the profile-microservice directory: ```cd profile-microservice```
+    - Run profile-microservice using docker-compose: ```docker-compose up```
+    - The Neo4j graph database interface can be accessed on ```localhost:7474```
+      - Username: "neo4j"
+      - Password: "12345678"
   - _**Song Microservice:**_
-    - Database must be called "eecs3311-test"
-    - Collection must be called "songs"
-      - Running ```import-songs-db.sh``` will create the database and import ```MOCK_DATA.json```
-    - Song Database must be connected to port 27017
+    - Navigate to the song-microservice directory: ```cd song-microservice```
+    - Run song-microservice using docker-compose: ```docker-compose up```
+      - Running ```import-songs-db.sh``` will create an intial database and import data from ```MOCK_DATA.json```
     
     
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -102,7 +105,7 @@ The application will have two important components which includes profile micros
 
 
 <!-- API -->
-## API Documentation
+## API Documentation and Use
 
 <a href="https://documenter.getpostman.com/view/31547597/2s9YeK5WGW">Song Microservice API Documentation</a>
 
@@ -121,6 +124,8 @@ The application will have two important components which includes profile micros
 [MongoDB-url]: https://www.mongodb.com/
 [Neo4j]: https://img.shields.io/badge/Neo4j-008CC1?style=for-the-badge&logo=neo4j&logoColor=white
 [Neo4j-url]: https://neo4j.com/
+[Docker]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
+[Docker-url]: https://www.docker.com/
 [Postman]: https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white
 [Postman-url]: https://www.postman.com/
 [Robot]: https://img.shields.io/badge/Robot%20Framework-000000?style=for-the-badge&logo=robot%20framework&logoColor=white

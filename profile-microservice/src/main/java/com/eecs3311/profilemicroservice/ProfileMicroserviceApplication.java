@@ -22,7 +22,7 @@ import org.neo4j.driver.v1.Transaction;
  */
 @SpringBootApplication
 public class ProfileMicroserviceApplication {
-	public static String dbUri = "bolt://localhost:7687";
+	public static String dbUri = "bolt://myneo4j:7687";
 	public static Config config = Config.builder().withoutEncryption().build();
     public static Driver driver = GraphDatabase.driver(dbUri, AuthTokens.basic("neo4j","12345678"), config);
 
@@ -37,7 +37,7 @@ public class ProfileMicroserviceApplication {
 		ProfileDriverImpl.InitProfileDb();
 		PlaylistDriverImpl.InitPlaylistDb();
 		
-		System.out.println("Profile service is running on port 3002");
+		System.out.println("Profile service is running on port 8080");
 	}
 }
 
