@@ -83,12 +83,15 @@ The application will emphasize on database and node based relationships between 
 - Ensure Docker in installed on your system.
   - _**Profile Microservice:**_
     - Navigate to the profile-microservice directory: ```cd profile-microservice```
+    - Build the docker image: ```docker-compose build app-neo4j```
     - Run profile-microservice using docker-compose: ```docker-compose up```
     - The Neo4j graph database interface can be accessed on ```localhost:7474```
-      - Username: "neo4j"
-      - Password: "12345678"
+        - Username: "neo4j"
+        - Password: "12345678"
+
   - _**Song Microservice:**_
     - Navigate to the song-microservice directory: ```cd song-microservice```
+    - Build the docker image: ```docker-compose build app-mongo```
     - Run song-microservice using docker-compose: ```docker-compose up```
       - Running ```import-songs-db.sh``` will create an intial database and import data from ```MOCK_DATA.json```
     
