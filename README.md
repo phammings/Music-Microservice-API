@@ -80,6 +80,7 @@ The application will emphasize on database and node based relationships between 
 <!-- INSTRUCTIONS -->
 ## Instructions
 
+- Maven clean and install the project: ```mvn clean install```
 - Ensure Docker in installed on your system.
   - _**Profile Microservice:**_
     - Navigate to the profile-microservice directory: ```cd profile-microservice```
