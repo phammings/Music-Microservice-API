@@ -72,6 +72,8 @@ The application will emphasize on database and node based relationships between 
 - ✔️ Testing HTTP responses with Postman
 - ✔️ Built automated test cases with the Robot Framework and JUnit5
 - ✔️ Utilize Docker for containerized deployment and easy setup across different environments
+- ✔️ Deployed microservices on an AWS EC2 instance, leveraging cloud infrastructure for enhanced scalability, reliability, and
+  global accessibility (EC2 instance terminated now due to costs)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
