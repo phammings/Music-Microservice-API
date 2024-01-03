@@ -3,7 +3,7 @@ Library           Collections
 Library           RequestsLibrary
 Test Timeout      30 seconds
 
-Suite Setup    Create Session    localhost    http://localhost:3001
+Suite Setup    Create Session    localhost    http://host.docker.internal:3001
 
 *** Variables ***
 ${danceWithMe}
