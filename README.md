@@ -96,6 +96,11 @@ The application will emphasize on database and node based relationships between 
   - ```docker-compose down```
   - Restart your Docker Desktop application
   - Repeat the above steps again
+
+
+- A local interface for the Neo4j graph database can be accessed at http://localhost:7474/ after running with credentials:
+  - Username: neo4j
+  - Password: 12345678
     
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
