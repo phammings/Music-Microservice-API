@@ -12,6 +12,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - net
 
@@ -27,6 +29,8 @@ services:
       - ORG_NEO4J_DRIVER_URI=bolt://myneo4j:7687
     ports:
       - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - net
 
