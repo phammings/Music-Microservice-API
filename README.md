@@ -102,6 +102,13 @@ The application will emphasize on database and node based relationships between 
   - Username: neo4j
   - Password: 12345678
     
+
+- *Profile Microservice*
+  - Can be accessed at http://localhost:8080/
+- *Song Microservice*
+  - Can be accessed at http://localhost:8081/
+
+    
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
