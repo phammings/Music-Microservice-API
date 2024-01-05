@@ -82,22 +82,20 @@ The application will emphasize on database and node based relationships between 
 <!-- INSTRUCTIONS -->
 ## Instructions
 
-- Maven clean and install the project: ```mvn clean install```
-- Ensure Docker in installed on your system.
-  - _**Profile Microservice:**_
-    - Navigate to the profile-microservice directory: ```cd profile-microservice```
-    - Build the docker image: ```docker-compose build app-neo4j```
-    - Run profile-microservice using docker-compose: ```docker-compose up```
-    - The Neo4j graph database interface can be accessed on ```localhost:7474```
-        - Username: "neo4j"
-        - Password: "12345678"
-
-  - _**Song Microservice:**_
-    - Navigate to the song-microservice directory: ```cd song-microservice```
-    - Build the docker image: ```docker-compose build app-mongo```
-    - Run song-microservice using docker-compose: ```docker-compose up```
-      - Running ```import-songs-db.sh``` will create an intial database and import data from ```MOCK_DATA.json```
-    
+- Ensure Docker in installed on your system
+  - See https://docs.docker.com/ for installation instructions
+1) Build the Docker image and ensure no previous cache is used:
+   - ```docker-compose build --no-cache```
+2) Compose the Docker image:
+   - ```docker-compose up```
+3) Initialize the MongoDB database with: 
+   - ```docker-compose exec mongodb mongoimport --db eecs3311-test --jsonArray --collection songs --legacy "/import/MOCK_DATA.json```
+- Should you get a "ServiceUnavailibleException" for profile-app:
+  - ```docker restart profile```
+- Should you get any other errors:
+  - ```docker-compose down```
+  - Restart your Docker Desktop application
+  - Repeat the above steps again
     
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
