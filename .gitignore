@@ -34,5 +34,3 @@ replay_pid*
 **/.vscode
 
 song_db_backup/
-
-Music-Microservice-API-keypair.pem

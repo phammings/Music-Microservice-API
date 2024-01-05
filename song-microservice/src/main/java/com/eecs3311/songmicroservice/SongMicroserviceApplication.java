@@ -16,6 +16,6 @@ public class SongMicroserviceApplication {
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(SongMicroserviceApplication.class, args);
-		System.out.println("Song Microservice is running on port 3001");
+		System.out.println("Song Microservice is running on port 8081");
 	}
 }

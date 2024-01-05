@@ -1,0 +1,67 @@
+version: '3.7'
+
+services:
+
+  song-app:
+    container_name: song
+    image: springboot-song-app:1.0
+    depends_on:
+      - mongodb
+    build:
+      context: ./song-microservice
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - net
+
+  profile-app:
+    container_name: profile
+    image: springboot-profile-app:1.0
+    depends_on:
+      - myneo4j
+    build:
+      context: ./profile-microservice
+      dockerfile: Dockerfile
+    environment:
+      - ORG_NEO4J_DRIVER_URI=bolt://myneo4j:7687
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - net
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.2
+    restart: unless-stopped
+    environment:
+      - LANG=C.UTF-8
+    ports:
+      - "27017:27017"
+    volumes:
+      - database:/data/db
+      - ./MOCK_DATA.json:/import/MOCK_DATA.json
+    networks:
+      - net
+
+  myneo4j:
+    container_name: db
+    image: neo4j:4.4.27-enterprise
+    environment:
+      - NEO4J_AUTH=neo4j/12345678
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    networks:
+      - net
+    
+networks:
+  net:
+
+volumes:
+  database:

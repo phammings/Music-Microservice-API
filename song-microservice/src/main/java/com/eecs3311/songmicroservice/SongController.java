@@ -116,7 +116,7 @@ public class SongController {
 
 		DbQueryStatus newStatus = songDal.deleteSongById(songId);
 		if (newStatus.getdbQueryExecResult().equals(DbQueryExecResult.QUERY_OK)) {
-			String url = "http://localhost:8080/deleteSongById/" + songId;
+			String url = "http://host.docker.internal:8080/deleteSongById/" + songId;
 			Request newRequestForm = new Request.Builder().url(url).put(new FormBody.Builder().build()).build();
 			client.newCall(newRequestForm).execute();
 		}

@@ -32,8 +32,8 @@ All My Setup
     Run Keyword    Setup UserNames
 
 Session Instantiation
-    Create Session    songs    http://localhost:3001
-    Create Session    profiles    http://localhost:3002
+    Create Session    songs    http://host.docker.internal:8081
+    Create Session    profiles    http://host.docker.internal:8080
 
 Setup Song DB
     # all of this should work, assuming testSongs.robot was already run and everything passed.
