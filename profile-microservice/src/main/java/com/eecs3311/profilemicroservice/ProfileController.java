@@ -119,7 +119,7 @@ public class ProfileController {
 			String name = entry.getKey();
 			List<String> songName = new ArrayList<>();
 			for (String songId : totalSongsFriendsLike.get(name)) {
-				String songURLstr = "http://song-app:8081/getSongTitleById/" + songId;
+				String songURLstr = "http://host.docker.internal:8081/getSongTitleById/" + songId;
 				Request newRequestForm = new Request.Builder().url(songURLstr).build();
 				try (Response getReq = this.client.newCall(newRequestForm).execute()) {
 					String reqBody = getReq.body().string();
@@ -168,7 +168,7 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 
-		String songURLstr = "http://song-app:8081/getSongTitleById/" + params.get(KEY_SONG_ID);
+		String songURLstr = "http://host.docker.internal:8081/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request newRequestForm = new Request.Builder().url(songURLstr).build();
 
 		try (Response newResponseForm =  client.newCall(newRequestForm).execute()) {
@@ -185,7 +185,7 @@ public class ProfileController {
 		}
 
 		DbQueryStatus status = playlistDriver.likeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		songURLstr = "http://song-app:8081/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
+		songURLstr = "http://host.docker.internal:8081/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=false";
 		Request new_Request = new Request.Builder().url(songURLstr).put(new FormBody.Builder().build()).build();
 		client.newCall(new_Request).execute();
 
@@ -206,7 +206,7 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 
-		String songURLstr = "http://song-app:8081/getSongTitleById/" + params.get(KEY_SONG_ID);
+		String songURLstr = "http://host.docker.internal:8081/getSongTitleById/" + params.get(KEY_SONG_ID);
 		Request newRequestForm = new Request.Builder().url(songURLstr).build();
 
 		try (Response newResponseForm =  client.newCall(newRequestForm).execute()) {
@@ -223,7 +223,7 @@ public class ProfileController {
 		}
 
 		DbQueryStatus status = playlistDriver.unlikeSong(params.get(KEY_USER_NAME), params.get(KEY_SONG_ID));
-		songURLstr = "http://song-app:8081/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
+		songURLstr = "http://host.docker.internal:8081/updateSongFavouritesCount/" + params.get(KEY_SONG_ID) + "?shouldDecrement=true";
 		Request new_Request = new Request.Builder().url(songURLstr).put(new FormBody.Builder().build()).build();
 		client.newCall(new_Request).execute();
 
