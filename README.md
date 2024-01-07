@@ -82,7 +82,7 @@ The application will emphasize on database and node based relationships between 
 <!-- INSTRUCTIONS -->
 ## Instructions
 
-- Ensure Docker in installed on your system
+- Ensure Docker is installed and running on your system
   - See https://docs.docker.com/ for installation instructions
 1) Build the Docker image and ensure no previous cache is used:
    - ```docker-compose build --no-cache```
